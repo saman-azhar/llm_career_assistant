@@ -1,9 +1,3 @@
-
----
-
-## 📘 `project_notes.md`
-
-```markdown
 # Project Notes
 
 ## 1. Dataset Overview
