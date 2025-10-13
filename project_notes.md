@@ -99,3 +99,55 @@ Build a baseline text classification model to categorize job descriptions into t
 - Environment configured and versioned with `requirements.txt`.  
 - Data and model experiments pushed to GitHub.  
 - Ready for LLM/NLP pipeline integration in upcoming phases.
+
+---
+
+## 3. Week 3 – Semantic Matching
+
+### Resume Dataset – Analysis & Preprocessing Summary
+
+**Dataset Overview:**
+
+* Source: [Kaggle Resume Dataset](https://www.kaggle.com/datasets/gauravduttakiit/resume-dataset)
+* Total Records (raw): 962 resumes
+* Text column: `Resume`
+* Label column: `Category`
+
+---
+
+### Data Cleaning Steps
+
+1. **Removed duplicates and empty rows** – 796 invalid/duplicate entries dropped.
+2. **Standardized text**
+
+   * Lowercased all text.
+   * Removed HTML tags, symbols, emojis, and URLs.
+3. **Tokenization and stopword removal** using NLTK.
+4. **Lemmatization** to normalize word forms.
+5. **Removed generic/filler terms**: “experience”, “project”, “company”, “description”, “detail”, “requirement”, “technology”, “responsibility”, “maharashtra”.
+6. **Preserved domain-relevant tokens**: programming languages, tools, technical terms, punctuation for abbreviations (like “C++”, “.NET”).
+7. **Filtered resumes by word length** – kept records with > 100 words to ensure quality and relevance.
+
+---
+
+### Exploratory Analysis
+
+* **Category Distribution (before cleaning):** 25 unique job categories.
+* **After filtering:** 12 categories retained for variation and relevance.
+
+  * Examples: *Data Science, Business Analyst, Web Designing, Automation Testing, Blockchain, SAP Developer, DevOps Engineer,* etc.
+* **Average resume length:** ~300 words.
+* **Most frequent words:** `data`, `database`, `system`, `sql`, `java`, `developer`, `testing`, `management`, `software`, `user`.
+
+---
+
+### Final Dataset Summary
+
+| Metric                 |                                       Count |
+| :--------------------- | ------------------------------------------: |
+| Records retained       |                                         166 |
+| Unique categories      |                                          12 |
+| Avg. tokens per resume |                                         300 |
+| Saved file             | `data/processed/cleaned_resume_dataset.csv` |
+
+---
