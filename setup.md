@@ -64,7 +64,7 @@ data/
 
 ```bash
 git config --global user.name "samwise"
-git config --global user.email "saman.azharr@gmail.com"
+git config --global user.email "abc@gmail.com"
 git config --global --list
 ```
 
