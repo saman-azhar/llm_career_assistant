@@ -5,7 +5,7 @@ An end-to-end NLP project that analyzes job descriptions, compares them with a C
 
 ---
 
-## 🔧 Tech Stack
+## Tech Stack
 
 **Core:** Python, Pandas, Scikit-learn
 **NLP/LLM:** HuggingFace Transformers, SentenceTransformers, (optional) OpenAI API
@@ -14,7 +14,7 @@ An end-to-end NLP project that analyzes job descriptions, compares them with a C
 
 ---
 
-## 🗂️ Project Overview
+## Project Overview
 
 | Phase  | Focus                         | Deliverable                  |
 | ------ | ----------------------------- | ---------------------------- |
@@ -27,7 +27,7 @@ An end-to-end NLP project that analyzes job descriptions, compares them with a C
 
 ---
 
-## ⚙️ Quick Start
+## Quick Start
 
 ```bash
 git clone https://github.com/saman-azhar/llm_career_assistant.git
@@ -35,12 +35,12 @@ cd llm_career_assistant
 pip install -r requirements.txt
 ```
 
-Setup details → [`setup_notes.md`](./setup_notes.md)
-Progress notes → [`project_notes.md`](./project_notes.md)
+Setup details → [`setup_notes.md`](https://github.com/saman-azhar/llm_career_assistant/blob/main/setup.md)
+Progress notes → [`project_notes.md`](https://github.com/saman-azhar/llm_career_assistant/blob/main/project_notes.md)
 
 ---
 
-## 🎯 Highlights
+## Highlights
 
 * Job–CV semantic matching via Sentence-BERT
 * Baseline ML → LLM pipeline progression
