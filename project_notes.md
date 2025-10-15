@@ -35,7 +35,7 @@ Created a mapping to reduce 300+ titles into 5 primary categories:
 
 ### Final Dataset Summary
 File name: data/cleaned_job_data_final.csv
-Columns to be used: clean_text, Simplified Job Title
+Columns to be used: cleaned_job_description, simplified_job_title
 
 ---
 
@@ -84,7 +84,7 @@ Columns to be used: clean_text, Simplified Job Title
 | Saved file             | `data/cleaned_resume_data_final.csv` |
 
 **File name:** data/cleaned_resume_final.csv
-**Columns to be used:** cleaned_resume, Category
+**Columns to be used:** cleaned_resume, category
 
 ---
 
@@ -160,14 +160,29 @@ Build a baseline text classification model to categorize job descriptions into t
 * Examined word frequencies before and after removing custom stopwords.
 * Visualized category distributions and token counts to confirm clean datasets.
 
+### Semantic Similarity
+* Installed and configured the **SentenceTransformers** library.
+* Selected the `all-MiniLM-L6-v2` model — a lightweight, BERT-based embedding model that balances **accuracy and speed**, making it ideal for local systems without GPU support.
+* Encoded both **job descriptions** and **resumes** into dense vector embeddings for semantic comparison.
+* Computed a **cosine similarity matrix** to measure alignment between each CV and job posting.
+* Structured the similarity results into a **pandas DataFrame** with labeled rows (CV categories) and columns (JD categories).
+* Exported the final **similarity scores** as a CSV file for further analysis and interpretation.
+
 ### Deliverable
 
 `03_resume_preprocessing.ipynb` containing:
 
-* Cleaning and preprocessing pipelines for CV and JD datasets
+* Cleaning and preprocessing pipelines for CV dataset
 * Custom stopword lists
-* Visualizations of cleaned datasets
-* Exported ready-to-use datasets for semantic matching
+* Visualizations of cleaned dataset
+* Exported ready-to-use dataset for semantic matching
+
+`04_semantic_matching.ipynb` containing:
+
+* SentenceTransformer setup & embedding generation
+* Cosine similarity computation
+* Export of similarity scores
+
 
 ---
 

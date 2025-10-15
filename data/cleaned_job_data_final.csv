@@ -1,4 +1,4 @@
-Job Title,Job Description,Company Name,Location,clean_text,Simplified Job Title
+Job Title,Job Description,Company Name,Location,cleaned_job_description,simplified_job_title
 Data Scientist,"data scientist
 location: albuquerque, nm
 education required: bachelor’s degree required, preferably in math, engineering, business, or the sciences.
