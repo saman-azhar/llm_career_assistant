@@ -150,47 +150,53 @@ Build a baseline text classification model to categorize job descriptions into t
 ### Key Activities
 
 * Loaded CV dataset from Kaggle.
-* Performed text cleaning and preprocessing: lowercasing, tokenization, lemmatization, and stopword removal.
+* Performed text cleaning and preprocessing — lowercasing, tokenization, lemmatization, and stopword removal.
 * **Identified high-frequency words in both JD and CV datasets that could bias similarity scoring** (e.g., “data”, “experience”, “team”, “work”, etc.).
-* Created **custom stopword lists** for both datasets and removed them to ensure semantic matching focuses on meaningful content.
+* Created **custom stopword lists** for both datasets and removed them to ensure semantic matching focuses on meaningful, domain-relevant content.
 * Analyzed CV categories and filtered to retain relevant roles aligned with JD dataset (e.g., Data Scientist, Data Engineer, Data Analyst, ML Engineer, Software Engineer).
 
 ### Exploratory Analysis of CV Data
 
 * Examined word frequencies before and after removing custom stopwords.
-* Visualized category distributions and token counts to confirm clean datasets.
+* Visualized category distributions and token counts to confirm clean and balanced datasets.
 
 ### Semantic Similarity
+
 * Installed and configured the **SentenceTransformers** library.
-* Selected the `all-MiniLM-L6-v2` model — a lightweight, BERT-based embedding model that balances **accuracy and speed**, making it ideal for local systems without GPU support.
-* Encoded both **job descriptions** and **resumes** into dense vector embeddings for semantic comparison.
-* Computed a **cosine similarity matrix** to measure alignment between each CV and job posting.
-* Structured the similarity results into a **pandas DataFrame** with labeled rows (CV categories) and columns (JD categories).
-* Exported the final **similarity scores** as a CSV file for further analysis and interpretation.
+* Selected the `all-MiniLM-L6-v2` model — a compact, BERT-based embedding model known for **high semantic accuracy and efficiency**, ideal for CPU-based environments.
+* Encoded both **job descriptions** and **CVs** into dense vector embeddings to capture semantic meaning beyond keywords.
+* Computed **cosine similarity scores** to measure how closely each resume aligns with every job description.
+* Organized results into a **pandas DataFrame** mapping CV categories to JD categories, and exported as `similarity_scores.csv`.
+* Built a **match scoring pipeline** to identify the **top 5 most similar job roles** for each resume based on cosine similarity and exported as `top_matches.csv`.
 
-### Deliverable
+### Insights
 
-`03_resume_preprocessing.ipynb` containing:
+* High similarity scores were observed within logically related roles (e.g., Data Science ↔ Data Scientist).
+* Some cross-category similarities reflected shared technical skill sets (e.g., Python, Machine Learning).
+* This validated that the cleaning and embedding pipeline effectively captured semantic overlap between CVs and JDs.
+
+### Deliverables
+
+`03_resume_preprocessing.ipynb`
 
 * Cleaning and preprocessing pipelines for CV dataset
 * Custom stopword lists
 * Visualizations of cleaned dataset
 * Exported ready-to-use dataset for semantic matching
 
-`04_semantic_matching.ipynb` containing:
+`04_semantic_matching.ipynb`
 
 * SentenceTransformer setup & embedding generation
 * Cosine similarity computation
-* Export of similarity scores
-
+* Match score extraction (Top 5 per resume)
+* Export of similarity scores for further analysis
 
 ---
-
 
 ## Summary of Progress
 **Week 1:** Data cleaning, title standardization, and exploration complete.  
 **Week 2:** Baseline ML models (LR, SVM) implemented and evaluated.  
-**Next Step:** Move toward semantic matching using SentenceTransformers (Week 3).
+**Week 3:** Move toward semantic matching using SentenceTransformers Embeddings and Cosine Similarity.
 
 ---
 
