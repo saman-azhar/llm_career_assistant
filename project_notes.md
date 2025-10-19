@@ -151,52 +151,116 @@ Build a baseline text classification model to categorize job descriptions into t
 
 * Loaded CV dataset from Kaggle.
 * Performed text cleaning and preprocessing — lowercasing, tokenization, lemmatization, and stopword removal.
-* **Identified high-frequency words in both JD and CV datasets that could bias similarity scoring** (e.g., “data”, “experience”, “team”, “work”, etc.).
-* Created **custom stopword lists** for both datasets and removed them to ensure semantic matching focuses on meaningful, domain-relevant content.
-* Analyzed CV categories and filtered to retain relevant roles aligned with JD dataset (e.g., Data Scientist, Data Engineer, Data Analyst, ML Engineer, Software Engineer).
+* Identified **high-frequency words** in both JD and CV datasets that could bias similarity scoring (e.g., “data”, “experience”, “team”, “work”).
+* Created **custom stopword lists** for both datasets to ensure the model focuses on meaningful, domain-relevant terms.
+* Filtered and retained relevant CV categories aligned with the JD dataset (e.g., Data Scientist, Data Engineer, Data Analyst, ML Engineer, Software Engineer).
+
+---
 
 ### Exploratory Analysis of CV Data
 
-* Examined word frequencies before and after removing custom stopwords.
-* Visualized category distributions and token counts to confirm clean and balanced datasets.
+* Analyzed word frequencies before and after applying custom stopwords.
+* Visualized category distributions and token counts to confirm dataset balance and clarity.
+
+---
 
 ### Semantic Similarity
 
-* Installed and configured the **SentenceTransformers** library.
-* Selected the `all-MiniLM-L6-v2` model — a compact, BERT-based embedding model known for **high semantic accuracy and efficiency**, ideal for CPU-based environments.
-* Encoded both **job descriptions** and **CVs** into dense vector embeddings to capture semantic meaning beyond keywords.
-* Computed **cosine similarity scores** to measure how closely each resume aligns with every job description.
-* Organized results into a **pandas DataFrame** mapping CV categories to JD categories, and exported as `similarity_scores.csv`.
-* Built a **match scoring pipeline** to identify the **top 5 most similar job roles** for each resume based on cosine similarity and exported as `top_matches.csv`.
+* Installed and configured **SentenceTransformers**.
+* Selected the `all-MiniLM-L6-v2` model — compact, fast, and reliable for semantic embedding on CPU systems.
+* Encoded both **job descriptions** and **CVs** into dense vector embeddings to capture contextual meaning, not just keyword overlap.
+* Computed **cosine similarity scores** to measure how closely each CV aligns with every JD.
+* Structured results into a **similarity matrix (DataFrame)** with CV categories as rows and JD categories as columns and exported it as `similarity_scores.csv`.
+* Built a **match scoring pipeline** to extract the **Top 5 most similar job roles** for each CV and saved results as `top_matches.csv`.
+
+---
+
+### Semantic Understanding
+
+This step bridges the gap between **semantic understanding** and **practical job matching**.
+Instead of raw similarity numbers, the model now provides interpretable insights:
+
+> “Which job roles best align with this resume, and how strong is that match?”
+
+This enables:
+
+* Quantitative ranking of resume–job relevance.
+* Skill gap analysis between matched roles.
+* Generation of human-readable match summaries.
+
+In short — the system now understands *what* the text means and *acts* on it intelligently.
+
+---
+
+### Use of spaCy for Skill Extraction (Didn't work)
+
+* Integrated **spaCy** for deeper linguistic understanding and domain-specific skill extraction.
+* Used the **`en_core_web_sm`** model for efficient tokenization, POS tagging, and noun phrase extraction.
+* Extracted likely skill terms (nouns and noun chunks) while filtering generic terms or stopwords.
+* This adds **linguistic precision** to skill matching, beyond simple word overlap.
+
+---
+
+### Keyword-based Skill Extraction using a Domain Vocabulary
+
+* Expanded a **domain-specific skill vocabulary** to identify key competencies across job descriptions.
+* Frequency distribution analysis confirmed strong coverage across analytical, engineering, and software domains.
+
+---
+
+### Skill Gap Analysis (Final Step of Week 3)
+
+* Combined the **semantic matching output** (`top_matches.csv`) with **extracted skill data** to identify **missing or underrepresented skills** in each CV compared to its top-matched JD.
+* For each CV:
+
+  * Retrieved the **Top 1 matching job role** and its **match score**.
+  * Compared skills extracted from CV vs JD to generate a **`Missing_Skills`** list.
+  * Saved the summarized results as `week3_missing_skills_summary.csv`.
+
+---
 
 ### Insights
 
-* High similarity scores were observed within logically related roles (e.g., Data Science ↔ Data Scientist).
-* Some cross-category similarities reflected shared technical skill sets (e.g., Python, Machine Learning).
-* This validated that the cleaning and embedding pipeline effectively captured semantic overlap between CVs and JDs.
+* High match scores (>0.7) were common within closely related domains (e.g., Data Scientist ↔ Data Science).
+* Cross-domain matches (e.g., ML Engineer ↔ Data Engineer) appeared when overlapping skill sets were strong — mainly Python, SQL, and ML tools.
+* The **Missing_Skills** column highlights specific skills that candidates may need to learn or emphasize for stronger alignment.
+* Some resumes had **no missing skills**, indicating near-complete overlap with their top-matched JD.
+* Overall, the pipeline now not only matches resumes semantically but also pinpoints *how* they fall short, forming the foundation for **targeted upskilling recommendations**.
+
+---
 
 ### Deliverables
 
-`03_resume_preprocessing.ipynb`
+**`03_resume_preprocessing.ipynb`**
 
-* Cleaning and preprocessing pipelines for CV dataset
+* Text cleaning and preprocessing pipeline for CV dataset
 * Custom stopword lists
-* Visualizations of cleaned dataset
-* Exported ready-to-use dataset for semantic matching
+* Dataset visualizations
+* Exported clean dataset ready for embedding
 
-`04_semantic_matching.ipynb`
+**`04_semantic_matching.ipynb`**
 
 * SentenceTransformer setup & embedding generation
 * Cosine similarity computation
 * Match score extraction (Top 5 per resume)
-* Export of similarity scores for further analysis
+* Exports: `similarity_scores.csv`, `top_matches.csv`
+
+**`week3_missing_skills_summary.csv`**
+
+* Final combined file showing:
+
+  * `CV_ID`
+  * `CV_Category`
+  * `Top_Match_Score`
+  * `Missing_Skills`
+* Used to interpret skill coverage and improvement areas for each CV.
 
 ---
 
 ## Summary of Progress
 **Week 1:** Data cleaning, title standardization, and exploration complete.  
 **Week 2:** Baseline ML models (LR, SVM) implemented and evaluated.  
-**Week 3:** Move toward semantic matching using SentenceTransformers Embeddings and Cosine Similarity.
+**Week 3:** Implemented semantic matching using transformer embeddings and extracted missing skills to identify CV–JD alignment gaps.
 
 ---
 
