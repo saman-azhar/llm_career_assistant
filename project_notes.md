@@ -257,6 +257,93 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 ---
 
+## Week 4 – Production-Level Scripts & LLM-Based Automation
+
+### Key Activities
+
+* Refactored all preprocessing, semantic matching, and LLM-based cover letter scripts for **production readiness**.
+* Converted hardcoded paths and parameters into **CLI-friendly arguments** for flexible execution.
+* Introduced **default values** for optional parameters to allow smooth first-time execution without manual tweaking.
+* Ensured scripts handle both **CSV and plain text inputs** with automatic column validation (`Resume` for CVs, `Job Description` for JDs).
+* Encapsulated core logic in **modular functions**, enabling reuse across pipelines, batch processing, or APIs.
+
+---
+
+### CLI & Optional Arguments
+
+* Users can now run scripts with a simple, positional interface or include optional arguments:
+
+  ```bash
+  python resume_preprocessing.py input.csv output.csv --min_resume_len 50 --min_word_count 100
+  python job_preprocessing.py input.csv output.csv --min_desc_len 50
+  python semantic_matching.py cv_cleaned.csv job_cleaned.csv outputs --top_n 5
+  python llm_coverletter.py cv.txt jd.txt outputs --model google/flan-t5-small --max_length 130 --min_length 40
+  ```
+* Optional args allow fine-tuning: minimum resume length, top N matches, summarization length, or LLM model selection.
+
+---
+
+### Production-Level Preprocessing
+
+* **Resume preprocessing:** cleaned text, removed duplicates, filtered short resumes, and kept only relevant categories.
+* **Job preprocessing:** cleaned job descriptions, simplified titles, and removed irrelevant entries.
+* Both scripts now save processed data as CSV for downstream tasks.
+
+---
+
+### Semantic Matching
+
+* Scripts now accept **CLI arguments** for CV and JD CSV paths, output folder, SentenceTransformer model, and top N matches.
+* Sentence embeddings and cosine similarity computation are fully modular.
+* Top N matches and missing skills are generated automatically and exported as CSVs for analysis.
+* Entire workflow is **pipeline-ready**, enabling integration with future automation steps.
+
+---
+
+### LLM-Based Job Description Summarization & Cover Letter Drafting
+
+* Integrated an **open-source instruction-tuned LLM**: `google/flan-t5-small` via Hugging Face `transformers`.
+* **Why FLAN-T5?**
+
+  * Lightweight and CPU-friendly.
+  * Produces concise, structured outputs ideal for bullet-point summaries.
+  * Instruction-tuned for task-specific text generation (summaries, cover letters).
+* Each job description is summarized into **3–4 bullet points**.
+* Cover letters are drafted automatically using **CV skills** and **JD summaries**.
+* Scripts are fully modular and CLI-ready, supporting batch processing for multiple CV–JD pairs.
+
+---
+
+### Workflow Integration
+
+* CLI-friendly preprocessing feeds into semantic matching.
+* Semantic matching outputs (Top N matches, missing skills) feed into LLM-based cover letter generation.
+* Entire Week 4 workflow forms a **complete end-to-end pipeline** from raw CVs and job descriptions to actionable insights and draft cover letters.
+
+---
+
+### Deliverables
+
+**`preprocessing_cv.py`**
+
+* Clean, filter, and export CV datasets with optional parameters for minimum length and categories.
+
+**`preprocessing_jd.py`**
+
+* Clean and simplify job descriptions with optional parameters for minimum description length.
+
+**`semantic_matching.py`**
+
+* Generate embeddings, compute cosine similarity, extract Top N matches, and calculate missing skills.
+* Outputs: `similarity_scores.csv`, `top_matches.csv`, `missing_skills_analysis.csv`.
+
+**`llm_integration.py`**
+
+* Summarize JDs and generate draft cover letters automatically.
+* Outputs: JD summaries (`jd_summary_*.txt`) and cover letters (`cover_letter_*_*.txt`).
+
+---
+
 ## Summary of Progress
 **Week 1:** Data cleaning, title standardization, and exploration complete.  
 **Week 2:** Baseline ML models (LR, SVM) implemented and evaluated.  
@@ -264,9 +351,13 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 ---
 
-**Repository Status:**  
-- Environment configured and versioned with `requirements.txt`.  
-- Data and model experiments pushed to GitHub.  
-- Ready for LLM/NLP pipeline integration in upcoming phases.
+**Repository Status:**
+
+* All preprocessing, semantic matching, and LLM cover letter scripts refactored for **production and CLI use**.
+* Scripts accept **positional and optional arguments**, support CSV/TXT inputs, and handle batch processing.
+* Semantic embeddings, top N match extraction, and missing skill analysis fully automated.
+* Open-source LLM (`google/flan-t5-small`) integrated for **JD summarization and cover letter drafting**.
+* Outputs consistently saved to structured directories (`outputs/`), ready for downstream evaluation.
+* Environment captured in `requirements.txt`; repository is **pipeline-ready** for end-to-end automation.
 
 ---
