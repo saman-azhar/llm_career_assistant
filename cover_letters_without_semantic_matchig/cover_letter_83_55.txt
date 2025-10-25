@@ -1,0 +1,8 @@
+Dear Hiring Manager,
+
+Based on your requirements: summary: looking fora data scientis/architect who has 8 yrs of exp in data design, data modelling, data flow, analytics in supply chain domain Here’s the detail jd: expert programming skills in Python, r experience in writing code for various machine learning algorithms for classification, clustering, forecasting, regression, neural networks and deep learning hands-on experience with modern enterprise data architectures and data toolsets (ex: data warehouse, data marts, data lake, 3nf and dimensional models, modeling tools, profiling tools) strong knowledge of supply-chain domain, preferably in the hi-tech industry strong problem solving and abstract thinking skills knowledge of data architecture and design patterns and the ability to apply them ability to conceptualize and articulate ideas clearly and concisely excellent communication, presentation and interpersonal skills.
+
+I align with your needs and have experience with Technical, Expertise:, Cisco, ASA,, Checkpoint.
+
+Sincerely,
+Candidate

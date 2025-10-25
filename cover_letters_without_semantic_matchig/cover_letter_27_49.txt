@@ -1,0 +1,8 @@
+Dear Hiring Manager,
+
+Based on your requirements: summary summary the digital health data scientist supports digital medicine & translational imaging projects from inception to completion by leveraging her/his technical expertise s/he guides the selection of devices, writes code to ingest data from these devices, implements the pipelines for bringing together data from multiple sources and develops novel digital biomarkers by using advanced signal processing and machine learning techniques..
+
+I align with your needs and have experience with Core, Project, Program, Management, Agile.
+
+Sincerely,
+Candidate

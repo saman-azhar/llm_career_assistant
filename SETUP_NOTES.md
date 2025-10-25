@@ -1,3 +1,5 @@
+Personal Rough Notes for Updating Other MD files
+
 # Day 1: WSL + Python Setup
 
 ## Installed Ubuntu LTS
@@ -189,3 +191,17 @@ Results:
 Metric	Before Balancing	After Balancing
 Accuracy	0.73	0.86
 F1 Score (weighted)	0.67	0.86
+
+
+Baseline LR + class balancing works well for this dataset.
+
+SVM is a good alternative, shows comparable performance.
+
+Highlighting minority class challenge is important — recruiters like seeing awareness of real-world dataset issues.
+
+Next steps could be:
+
+Collect more ML Engineer samples
+
+Try n-grams or embeddings for richer feature representation
+

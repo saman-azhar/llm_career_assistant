@@ -1,0 +1,8 @@
+Dear Hiring Manager,
+
+Based on your requirements: summary we are looking for a data scientist to join our data science team to work on interesting projects to help our clients make data driven solutions as a Data Scientist, you’ll work closely with the clients to understand their business needs, frame them as statistical problems, and solve them with cutting edge techniques collaborate with your team, including machine learning engineers, data engineers, analysts, and tpms to define tasks, provide estimates, and work together to deliver a world class solution the ideal candidate will have the balance of technical skills and business acumen to help the client better understand their core needs while understanding technical limitations.
+
+I align with your needs and have experience with Areas, Expertise, Oracle, Databases, Weblogic.
+
+Sincerely,
+Candidate

@@ -215,7 +215,7 @@ In short — the system now understands *what* the text means and *acts* on it i
 
   * Retrieved the **Top 1 matching job role** and its **match score**.
   * Compared skills extracted from CV vs JD to generate a **`Missing_Skills`** list.
-  * Saved the summarized results as `week3_missing_skills_summary.csv`.
+  * Saved the summarized results as `top_matches_with_missing_skills.csv`.
 
 ---
 
@@ -245,7 +245,7 @@ In short — the system now understands *what* the text means and *acts* on it i
 * Match score extraction (Top 5 per resume)
 * Exports: `similarity_scores.csv`, `top_matches.csv`
 
-**`week3_missing_skills_summary.csv`**
+**`top_matches_with_missing_skills.csv`**
 
 * Final combined file showing:
 

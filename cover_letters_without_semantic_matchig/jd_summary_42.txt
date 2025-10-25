@@ -1,0 +1,2 @@
+- persivia is seeking data engineer who will help support our customer base as well as our development team
+- this position requires extracting data from meditech, mckesson, epic and other hospital systems.

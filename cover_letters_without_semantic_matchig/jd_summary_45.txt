@@ -1,0 +1,4 @@
+- cancelretry if you continue to have issues
+- We apologize for that
+- Please try again or contact support if your issues continue to be resolved
+- We appreciate your time and effort to resolve your issues.
