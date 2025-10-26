@@ -266,6 +266,8 @@ In short — the system now understands *what* the text means and *acts* on it i
 * Introduced **default values** for optional parameters to allow smooth first-time execution without manual tweaking.
 * Ensured scripts handle both **CSV and plain text inputs** with automatic column validation (`Resume` for CVs, `Job Description` for JDs).
 * Encapsulated core logic in **modular functions**, enabling reuse across pipelines, batch processing, or APIs.
+* Conducted first **end-to-end test run** of semantic matching + LLM cover letter generation using real CV–JD pairs.
+* Observed limitations in current cover letter generation — repetitive and non-contextual language — prompting plan for **RAG-based enhancement** in upcoming iteration.
 
 ---
 
@@ -279,6 +281,7 @@ In short — the system now understands *what* the text means and *acts* on it i
   python semantic_matching.py cv_cleaned.csv job_cleaned.csv outputs --top_n 5
   python llm_coverletter.py cv.txt jd.txt outputs --model google/flan-t5-small --max_length 130 --min_length 40
   ```
+
 * Optional args allow fine-tuning: minimum resume length, top N matches, summarization length, or LLM model selection.
 
 ---
@@ -297,20 +300,17 @@ In short — the system now understands *what* the text means and *acts* on it i
 * Sentence embeddings and cosine similarity computation are fully modular.
 * Top N matches and missing skills are generated automatically and exported as CSVs for analysis.
 * Entire workflow is **pipeline-ready**, enabling integration with future automation steps.
+* **New this week:** validated semantic matching results as input context for cover letter generation, ensuring CV–JD alignment.
 
 ---
 
 ### LLM-Based Job Description Summarization & Cover Letter Drafting
 
 * Integrated an **open-source instruction-tuned LLM**: `google/flan-t5-small` via Hugging Face `transformers`.
-* **Why FLAN-T5?**
-
-  * Lightweight and CPU-friendly.
-  * Produces concise, structured outputs ideal for bullet-point summaries.
-  * Instruction-tuned for task-specific text generation (summaries, cover letters).
 * Each job description is summarized into **3–4 bullet points**.
-* Cover letters are drafted automatically using **CV skills** and **JD summaries**.
-* Scripts are fully modular and CLI-ready, supporting batch processing for multiple CV–JD pairs.
+* Cover letters are drafted automatically using **CV skills**, **JD summaries**, and **semantic match insights**.
+* **Observation:** while structure and coherence were consistent, output lacked contextual fluency — confirming the need to move beyond vanilla LLM prompting.
+* Next step: enhance pipeline with a **vector database (e.g., Qdrant or FAISS)** to enable **RAG-style retrieval augmentation** for more accurate, context-aware generation.
 
 ---
 
@@ -319,6 +319,7 @@ In short — the system now understands *what* the text means and *acts* on it i
 * CLI-friendly preprocessing feeds into semantic matching.
 * Semantic matching outputs (Top N matches, missing skills) feed into LLM-based cover letter generation.
 * Entire Week 4 workflow forms a **complete end-to-end pipeline** from raw CVs and job descriptions to actionable insights and draft cover letters.
+* **Next Milestone:** migrate to modular architecture (`/src/` structure), add Qdrant-based RAG pipeline, and begin containerization in Week 5.
 
 ---
 
@@ -339,8 +340,14 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 **`llm_integration.py`**
 
-* Summarize JDs and generate draft cover letters automatically.
+* Summarize JDs and generate draft cover letters automatically using LLMs.
 * Outputs: JD summaries (`jd_summary_*.txt`) and cover letters (`cover_letter_*_*.txt`).
+
+**`cover_letter_generation.py`**
+
+* Summarize JDs and generate draft cover letters automatically using LLMs and semantic matching output from week 3.
+* Outputs: JD summaries (`jd_summary_*.txt`) and cover letters (`cover_letter_*_*.txt`).
+* Planned improvement: **upgrade to RAG pipeline with vector database** for enhanced contextual understanding and generation.
 
 ---
 
