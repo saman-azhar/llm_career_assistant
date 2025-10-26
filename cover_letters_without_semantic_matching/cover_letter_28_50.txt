@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: key responsibilities of the advanced analytics data scientist include interfacing with all business stake holders to formulate the right business questions, address them with scientific rigor, design, implement, test, productize, monitor and document data science assets effectively, evangelize data science to the organization and contribute to rendering first tech data-driven..
-
-I align with your needs and have experience with Total, IT, Experience, Core, Data.
-
-Sincerely,
-Candidate

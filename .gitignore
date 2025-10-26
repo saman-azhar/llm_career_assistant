@@ -1,7 +1,33 @@
+# Python
 venv/
 __pycache__/
 *.pyc
-.DS_Store
-.ipynb_checkpoints/
+*.pyo
+*.pyd
 *.pkl
+*.pt
+*.bin
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Environment and logs
 .env
+.venv/
+logs/
+*.log
+config/*.local.yaml
+
+# Project-specific
+data/
+models/
+archive/
+artifacts/
+outputs/
+semantic_matching_output/
+cover_letters_using_semantic_matching/
+cover_letters_without_semantic_matching/

@@ -1,0 +1,34 @@
+# === Global Config for Career Assistant ===
+
+# --- Paths ---
+data_paths:
+  raw_data: "career_assistant/data/raw/"
+  processed_data: "career_assistant/data/processed/"
+  vector_store: "career_assistant/data/vector_store/default/"
+  model_dir: "career_assistant/artifacts/models/"
+
+# --- Embeddings ---
+embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+embedding_dim: 384
+
+# --- RAG Pipeline ---
+retriever:
+  top_k: 5
+  similarity_metric: "cosine"
+
+generator:
+  model_name: "google/flan-t5-small"
+  max_length: 200
+  min_length: 60
+
+# --- Logging ---
+logging:
+  level: "INFO"
+  log_to_file: true
+  log_file: "logs/app.log"
+
+# --- Environment ---
+environment:
+  dev: true
+  staging: false
+  production: false

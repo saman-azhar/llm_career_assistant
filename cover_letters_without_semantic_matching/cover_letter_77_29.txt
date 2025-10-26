@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: data scientist, senior, charlottesville, va position summary tbg is seeking a senior data scientist to provide support principle responsibilities of the position:  proficiency in at least one of the following languages: python, r, java, c++ as applied to programming access and manipulation of data (other languages will be considered) demonstrated experience working with one or more database structures (e.g relational, nosql, graph).
-
-I align with your needs and have experience with Skills:, ETL, Data, Warehousing, SQL/PL.
-
-Sincerely,
-Candidate

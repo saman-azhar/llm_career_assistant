@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: summaryprovide data management and statistical analysis in big data environment assist in development of tools and processes to manage, integrate and synthesize large data sets and deliver business rules and recommendations to functional business units and product managers responsibilities and duties • perform analyses, development and provide data mining in a large data warehouse environment which includes data design, database architecture, meta data and repository creation • extensive use data mining and data analysis tools • review and validate data loaded into the data warehouse for accuracy • provide technical consulting to users of data warehouses and advises users on conflicts and inappropriate data usage • gather and assess business information needs and prepare system requirements • interact with user community to develop and produce reporting requirements • responsible for prototyping solutions, preparing test scripts, and conducting tests and for data replication, extraction, loading, cleansing, and data modeling for database warehouses • maintain knowledge of software tools, languages, scripts and shells that effectively support the database warehouse environment in different operating system environments • make recommendations towards the development of new code or reuse of existing code • responsibilities may also include participation in component and data architecture design, performance monitoring, product evaluation and buy versus build recommendations #li-js1 requirements • 7+ years of programming/system.
-
-I align with your needs and have experience with Operating, Systems, Windows, XP,, Tools/Packages.
-
-Sincerely,
-Candidate
