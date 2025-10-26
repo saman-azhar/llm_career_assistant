@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: Description: appformix team in juniper is seeking a data science engineer to work on the developing sophisticated analytics for our cloud monitoring and optimization platform responsibilities: • design and develop ml/analytics related features by leveraging supervised/unsupervised machine learning algorithms, data science knowledge • develop tools for anomaly detection, forecast models, capacity planning, metric correlation models which should work at scale for large volumes of time-series data • work with the team to develop apis, schemas.
-
-I align with your needs and have experience with Computer, Yes., SQL, Unix, Data.
-
-Sincerely,
-Candidate
