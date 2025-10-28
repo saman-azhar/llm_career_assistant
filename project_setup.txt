@@ -1,8 +1,9 @@
 .:
 README.md
-SETUP_NOTES.md
 archive
 career_assistant
+config
+makefile
 notebooks
 project_notes.md
 project_setup.txt
@@ -27,16 +28,8 @@ cover_letter_SAP Developer.txt
 cover_letter_Web Designing.txt
 
 ./archive/cover_letters_without_semantic_matching:
-cover_letter_10_1.txt
-cover_letter_10_10.txt
-cover_letter_10_11.txt
-cover_letter_10_12.txt
-cover_letter_10_13.txt
-jd_summary_81.txt
-jd_summary_82.txt
-jd_summary_83.txt
-jd_summary_84.txt
-jd_summary_9.txt
+cover_letter_1_1.txt
+jd_summary_1.txt
 
 ./career_assistant:
 artifacts
@@ -53,10 +46,16 @@ models
 baseline_lr_model.pkl
 
 ./career_assistant/data:
+interim
 processed
 raw
-semi_processed
 vector_store
+
+./career_assistant/data/interim:
+cleaned_job_data_v1.csv
+cleaned_resume_data_v1.csv
+glassdoor_jobs_cleaned.csv
+glassdoor_jobs_selected.csv
 
 ./career_assistant/data/processed:
 cleaned_job_data_final.csv
@@ -78,19 +77,13 @@ glassdoor_jobs.csv
 jobs-dataset-from-glassdoor.zip
 resume-dataset.zip
 
-./career_assistant/data/semi_processed:
-cleaned_job_data_v1.csv
-cleaned_resume_data_v1.csv
-glassdoor_jobs_cleaned.csv
-glassdoor_jobs_selected.csv
-
 ./career_assistant/data/vector_store:
-initial
+default
 
-./career_assistant/data/vector_store/initial:
+./career_assistant/data/vector_store/default:
 embeddings
 
-./career_assistant/data/vector_store/initial/embeddings:
+./career_assistant/data/vector_store/default/embeddings:
 cv_embeddings.npy
 job_embeddings.npy
 
@@ -113,12 +106,15 @@ vector_store.py
 ./career_assistant/tests:
 __init__.py
 test_preprocessing.py
-test_tag_pipeline.py
+test_rag_pipeline.py
 
 ./career_assistant/utils:
 __init__.py
 file_utils.py
 logger.py
+
+./config:
+config.yaml
 
 ./notebooks:
 01_job_data_preprocessing.ipynb
