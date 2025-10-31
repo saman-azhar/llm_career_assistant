@@ -3,6 +3,7 @@ README.md
 archive
 career_assistant
 config
+layout.txt
 makefile
 notebooks
 project_notes.md
@@ -59,16 +60,67 @@ glassdoor_jobs_selected.csv
 
 ./career_assistant/data/processed:
 cleaned_job_data_final.csv
+cleaned_job_data_test.csv
 cleaned_resume_data_final.csv
+cleaned_resume_data_test.csv
 eda_data.csv
+resume_diffs.csv
 semantic_matching_output
 
 ./career_assistant/data/processed/semantic_matching_output:
+cv_embeddings.npy
+job_embeddings.npy
 missing_skills.csv
 missing_skills_analysis.csv
 similarity_scores.csv
+test
+test2
+test3
+test4
+test5
+test6
+test7
 top_jd_skills.csv
 top_matches.csv
+top_matches_with_missing_skills.csv
+
+./career_assistant/data/processed/semantic_matching_output/test:
+cv_embeddings.npy
+job_embeddings.npy
+missing_skills_analysis.csv
+similarity_scores.csv
+top_matches.csv
+top_matches_with_missing_skills.csv
+
+./career_assistant/data/processed/semantic_matching_output/test2:
+cv_embeddings.npy
+job_embeddings.npy
+similarity_scores.csv
+top_matches.csv
+top_matches_with_missing_skills.csv
+
+./career_assistant/data/processed/semantic_matching_output/test3:
+cv_embeddings.npy
+job_embeddings.npy
+similarity_scores.csv
+top_matches.csv
+top_matches_with_missing_skills.csv
+
+./career_assistant/data/processed/semantic_matching_output/test4:
+
+./career_assistant/data/processed/semantic_matching_output/test5:
+cv_embeddings.npy
+job_embeddings.npy
+similarity_scores.csv
+top_matches.csv
+top_matches_with_missing_skills.csv
+
+./career_assistant/data/processed/semantic_matching_output/test6:
+similarity_scores.csv
+top_matches_with_missing_skills.csv
+
+./career_assistant/data/processed/semantic_matching_output/test7:
+similarity_scores.csv
 top_matches_with_missing_skills.csv
 
 ./career_assistant/data/raw:
@@ -89,9 +141,11 @@ job_embeddings.npy
 
 ./career_assistant/preprocessing:
 __init__.py
+compare_outputs.py
 preprocessing_cv.py
 preprocessing_jd.py
 semantic_matching.py
+vis.ipynb
 
 ./career_assistant/rag_pipeline:
 __init__.py

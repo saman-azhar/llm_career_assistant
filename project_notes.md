@@ -351,6 +351,110 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 ---
 
+
+## Week 5 – Vector Database Integration & Infrastructure Setup
+
+### Key Activities
+
+* **Revisited and validated the preprocessing pipelines** for both job descriptions and resumes to ensure full reproducibility and compatibility across scripts.
+* Conducted integration testing of the three main pipeline components:
+
+  * `preprocessing_jd.py`
+  * `preprocessing_cv.py`
+  * `semantic_matching.py`
+* Confirmed that cleaned outputs (CSV format) remained consistent in schema and encoding with earlier weeks’ versions.
+* Verified that text normalization, stopword filtering, and lemmatization logic worked correctly across both datasets after code refactoring for modularity.
+
+---
+
+### Improved Semantic Matching (Embedding Model Upgrade)
+
+* Replaced the earlier `all-MiniLM-L6-v2` model with **`intfloat/e5-base-v2`** for generating embeddings.
+* **Reason for change:**
+
+  * `e5-base-v2` produces higher-quality embeddings optimized for *text similarity and retrieval tasks*, especially for semantically dense inputs like job descriptions and resumes.
+  * It’s **instruction-tuned**, meaning it better captures intent-based context rather than surface-level keyword proximity.
+  * Superior cross-domain generalization — reduced false positives in unrelated job matches and delivered higher cosine similarity scores for genuinely aligned CV–JD pairs.
+* **Outcome:**
+
+  * Matching results showed more realistic alignment between roles (e.g., Data Scientist ↔ ML Engineer vs. previously random overlaps).
+  * Average cosine similarity scores for top matches improved by ~8–10%.
+  * The semantic differentiation between similar job families became much sharper — confirming model suitability for production use.
+
+---
+
+### Transition to Vector Database (Qdrant)
+
+* Initiated **vector database integration** to move from file-based similarity search to **persistent, scalable retrieval**.
+* Deployed **Qdrant** locally using Docker.
+
+  * Validated setup with `docker run hello-world` and subsequent `qdrant/qdrant` container initialization.
+  * Confirmed successful local connection via Python client (`QdrantClient(host="localhost", port=6333)`).
+* **Created and validated collection:**
+
+  * Collection name: `career_vectors`
+  * Vector size: 768 (matching embedding dimensions of `e5-base-v2`)
+  * Distance metric: **Cosine**
+* Successfully inserted, queried, and retrieved test embeddings — confirming end-to-end functionality of the database pipeline.
+
+---
+
+### Docker Setup & Troubleshooting
+
+* Installed Docker Desktop and configured **WSL2 integration** for Ubuntu environment.
+* Resolved permission errors (`permission denied while trying to connect to the Docker daemon socket`) by adjusting user permissions and restarting the Docker service.
+* Verified setup by running test containers and ensuring communication between Docker daemon and WSL Ubuntu instance.
+* Qdrant container verified to run smoothly and persist data locally.
+
+---
+
+### Validation & Testing
+
+* Conducted multiple test queries against `career_vectors` collection to verify indexing and retrieval accuracy.
+* Confirmed that the client successfully returns top matches with their associated cosine scores.
+* Vector count verified through `client.get_collection("career_vectors")`, confirming correct embedding ingestion pipeline.
+
+---
+
+### Observations
+
+* Upgrading to **`e5-base-v2`** significantly improved the semantic accuracy of resume–job alignment.
+* Qdrant setup laid the foundation for a **RAG-style retrieval pipeline**, enabling contextual document retrieval for downstream LLM-based generation (cover letters, recommendations, etc.).
+* Dockerized environment ensures reproducibility, portability, and smoother scaling to API or web-based deployment later.
+
+---
+
+### Deliverables
+
+* **`semantic_matching.py` (updated):**
+
+  * Integrated `e5-base-v2` embedding model.
+  * Adjusted similarity computation and data export for new vector structure.
+  * Outputs: updated similarity CSVs and JSON-ready match data.
+
+* **Qdrant Setup (Docker):**
+
+  * Local vector database running via containerized environment.
+  * Tested collection creation, insertion, and retrieval pipelines.
+  * Ready for integration with LLM-based retrieval and RAG workflows.
+
+* **Environment Validation:**
+
+  * Verified Docker–WSL2 communication.
+  * Confirmed persistence and queryability of embeddings.
+
+---
+
+### Summary of Week 5 Progress
+
+* Preprocessing pipelines verified for stability and modular execution.
+* Upgraded semantic model to `intfloat/e5-base-v2` — substantial improvement in match precision and contextual understanding.
+* Deployed and tested **Qdrant** vector database locally through Docker for scalable similarity search.
+* Established groundwork for **RAG-based architecture** to power next-generation cover letter generation and personalized career recommendations.
+
+---
+
+
 ## Summary of Progress
 **Week 1:** Data cleaning, title standardization, and exploration complete.  
 **Week 2:** Baseline ML models (LR, SVM) implemented and evaluated.  

@@ -31,3 +31,7 @@ outputs/
 semantic_matching_output/
 cover_letters_using_semantic_matching/
 cover_letters_without_semantic_matching/
+project_setup.txt
+
+# Qdrant local storage
+qdrant_storage/
