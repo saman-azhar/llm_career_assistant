@@ -351,19 +351,20 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 ---
 
-
-## Week 5 – Vector Database Integration & Infrastructure Setup
+## Week 5 – Vector Database Integration & RAG Pipeline Setup
 
 ### Key Activities
 
-* **Revisited and validated the preprocessing pipelines** for both job descriptions and resumes to ensure full reproducibility and compatibility across scripts.
-* Conducted integration testing of the three main pipeline components:
+* Transitioned from file-based cosine similarity to a **true RAG (Retrieval-Augmented Generation)** architecture using **Qdrant** as the vector database backend.
+* Integrated the **`intfloat/e5-base-v2`** model for embeddings and connected it directly with the **`mistralai/Mistral-7B-Instruct-v0.2`** model for generation.
+* The goal: move beyond static similarity scoring — enabling a system where the LLM dynamically retrieves the most relevant CV–JD context from the vector database before generating responses (cover letters, insights, compatibility feedback, etc.).
+* Confirmed end-to-end data flow:
 
-  * `preprocessing_jd.py`
-  * `preprocessing_cv.py`
-  * `semantic_matching.py`
-* Confirmed that cleaned outputs (CSV format) remained consistent in schema and encoding with earlier weeks’ versions.
-* Verified that text normalization, stopword filtering, and lemmatization logic worked correctly across both datasets after code refactoring for modularity.
+  1. Preprocessed CVs and JDs →
+  2. Embedded via `e5-base-v2` →
+  3. Stored in Qdrant (`career_assistant` collection) →
+  4. Retrieved relevant context chunks →
+  5. Fed into **Mistral** for generation.
 
 ---
 
@@ -380,40 +381,6 @@ In short — the system now understands *what* the text means and *acts* on it i
   * Matching results showed more realistic alignment between roles (e.g., Data Scientist ↔ ML Engineer vs. previously random overlaps).
   * Average cosine similarity scores for top matches improved by ~8–10%.
   * The semantic differentiation between similar job families became much sharper — confirming model suitability for production use.
-
----
-
-### Transition to Vector Database (Qdrant)
-
-* Initiated **vector database integration** to move from file-based similarity search to **persistent, scalable retrieval**.
-* Deployed **Qdrant** locally using Docker.
-
-  * Validated setup with `docker run hello-world` and subsequent `qdrant/qdrant` container initialization.
-  * Confirmed successful local connection via Python client (`QdrantClient(host="localhost", port=6333)`).
-* **Created and validated collection:**
-
-  * Collection name: `career_vectors`
-  * Vector size: 768 (matching embedding dimensions of `e5-base-v2`)
-  * Distance metric: **Cosine**
-* Successfully inserted, queried, and retrieved test embeddings — confirming end-to-end functionality of the database pipeline.
-
----
-
-### Docker Setup & Troubleshooting
-
-* Installed Docker Desktop and configured **WSL2 integration** for Ubuntu environment.
-* Resolved permission errors (`permission denied while trying to connect to the Docker daemon socket`) by adjusting user permissions and restarting the Docker service.
-* Verified setup by running test containers and ensuring communication between Docker daemon and WSL Ubuntu instance.
-* Qdrant container verified to run smoothly and persist data locally.
-
----
-
-### Validation & Testing
-
-* Conducted multiple test queries against `career_vectors` collection to verify indexing and retrieval accuracy.
-* Confirmed that the client successfully returns top matches with their associated cosine scores.
-* Vector count verified through `client.get_collection("career_vectors")`, confirming correct embedding ingestion pipeline.
-
 ---
 
 ### Observations
@@ -424,33 +391,81 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 ---
 
-### Deliverables
+### RAG Pipeline Implementation
 
-* **`semantic_matching.py` (updated):**
+* **Architecture Overview:**
 
-  * Integrated `e5-base-v2` embedding model.
-  * Adjusted similarity computation and data export for new vector structure.
-  * Outputs: updated similarity CSVs and JSON-ready match data.
-
-* **Qdrant Setup (Docker):**
-
-  * Local vector database running via containerized environment.
-  * Tested collection creation, insertion, and retrieval pipelines.
-  * Ready for integration with LLM-based retrieval and RAG workflows.
-
-* **Environment Validation:**
-
-  * Verified Docker–WSL2 communication.
-  * Confirmed persistence and queryability of embeddings.
+  * **Retriever:** Qdrant-powered vector search using cosine similarity.
+  * **Encoder:** `intfloat/e5-base-v2` for embedding both user inputs (JD/CV) and stored documents.
+  * **Generator:** `mistralai/Mistral-7B-Instruct-v0.2` for response generation.
+* The pipeline retrieves top-matching vectors (based on query embeddings) and injects those snippets into the Mistral prompt as contextual evidence.
+* This allows Mistral to write **highly personalized, context-grounded cover letters** and produce **targeted insights** (e.g., missing skills, match strength, role recommendations).
 
 ---
 
-### Summary of Week 5 Progress
+### Why Mistral-7B-Instruct-v0.2
 
-* Preprocessing pipelines verified for stability and modular execution.
-* Upgraded semantic model to `intfloat/e5-base-v2` — substantial improvement in match precision and contextual understanding.
-* Deployed and tested **Qdrant** vector database locally through Docker for scalable similarity search.
-* Established groundwork for **RAG-based architecture** to power next-generation cover letter generation and personalized career recommendations.
+* Chosen after evaluating multiple open models for **instruction-following performance and efficiency**.
+* Mistral-7B offers:
+
+  * **Excellent generalization** on instruction-tuned tasks (comparable to larger 13B+ models).
+  * **Strong coherence and reasoning ability** when handling structured prompts (like CV–JD matching and professional writing).
+  * **Lightweight inference footprint** — runs efficiently on moderate GPU setups, making it ideal for cloud deployment and local prototyping.
+* Unlike Flan-T5 (used earlier), Mistral handles **longer contexts** and **complex prompts** much better — essential for our RAG setup, where it processes multi-document context retrieved from Qdrant.
+* Practically, this shift means:
+
+  * More human-like phrasing in generated cover letters.
+  * Better logical consistency between retrieved job data and generated insights.
+  * Higher adaptability to unseen job/CV structures at runtime.
+
+---
+
+### Vector Database: Qdrant Integration Details
+
+* Reused and validated **`career_vectors`** collection for both JD and CV embeddings.
+* Stored metadata (`type`, `source_id`, `category`) to distinguish between resumes and job descriptions.
+* Implemented query pipeline:
+
+  * User submits JD or CV at runtime.
+  * System encodes query → retrieves top-k most similar vectors.
+  * Retrieved context passed to the LLM for grounded generation.
+* Confirmed that retrieval queries return consistent and high-quality semantic matches — critical for producing relevant LLM outputs.
+
+---
+
+### Validation & Testing
+
+* Ran multiple end-to-end test cases simulating runtime queries:
+
+  * Input CV → retrieve matching JDs → generate cover letter + compatibility report.
+  * Input JD → retrieve top CVs → summarize ideal candidate profiles.
+* Verified that Mistral’s generations are contextually grounded and reflect retrieved data (not hallucinated content).
+* Successfully exported complete outputs including:
+
+  * Generated cover letters (`cover_letter_mistral_*.txt`)
+  * Compatibility insights (`compatibility_report_*.json`)
+  * Retrieval metadata (vector IDs, cosine scores)
+
+---
+
+### Deliverables
+
+* **`rag_pipeline.py`**
+
+  * Complete retrieval-augmented generation pipeline.
+  * Integrated `e5-base-v2` embeddings, Qdrant retriever, and Mistral generator.
+  * Modular design for API integration (e.g., FastAPI endpoint later).
+* **`rag_utils.py`**
+
+  * Helper functions for vector insertion, retrieval, and context formatting.
+  * Includes logic to maintain unified `career_assistant` collection for both CV and JD data.
+* **Updated Docker Environment**
+
+  * Qdrant container running persistently.
+  * Pipeline confirmed operational within local and containerized environments.
+* **Output Artifacts**
+
+  * Generated cover letters and compatibility insights validated across multiple CV–JD test cases.
 
 ---
 

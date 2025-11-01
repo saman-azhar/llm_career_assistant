@@ -8,7 +8,7 @@ class VectorStore:
     def __init__(self, 
                  host="localhost", 
                  port=6333, 
-                 collection_name="career_vectors", 
+                 collection_name="career_assistant", 
                  embedding_model="intfloat/e5-base-v2"):
         
         self.collection_name = collection_name
@@ -50,4 +50,16 @@ class VectorStore:
 
     def search(self, query_text, top_k=5):
         """Search using LangChain’s retriever abstraction"""
+        """Perform a similarity search in Qdrant using LangChain abstraction.
+
+        Parameters:
+            query_text (str): Raw natural language query. 
+                NOTE: This function expects **plain text**, not precomputed embeddings.
+                The embedding conversion is handled automatically via the
+                HuggingFaceEmbeddings model configured in this VectorStore.
+            top_k (int): Number of nearest results to retrieve.
+
+        Returns:
+            List[langchain_core.documents.Document]: Top-matching documents.
+        """
         return self.store.similarity_search(query_text, k=top_k)
