@@ -148,6 +148,26 @@ def semantic_matching(cv_csv, job_csv, output_dir, model_name='intfloat/e5-base-
     print(f"Semantic matching and missing skills analysis saved to {output_dir}")
 
 
+def compute_similarity_runtime(cv_text, jd_text, model_name='intfloat/e5-base-v2'):
+    """Runtime version: compute cosine similarity and missing skills for a single CV-JD pair."""
+    model = SentenceTransformer(model_name)
+    cv_emb = model.encode([cv_text], normalize_embeddings=True)
+    jd_emb = model.encode([jd_text], normalize_embeddings=True)
+    similarity_score = float(cosine_similarity(cv_emb, jd_emb)[0][0])
+
+    cv_skills = set(extract_skills(cv_text))
+    jd_skills = set(extract_skills(jd_text))
+    missing_skills = sorted(list(jd_skills - cv_skills))
+    matched_skills = sorted(list(jd_skills & cv_skills))
+
+    return {
+        "similarity_score": similarity_score,
+        "matched_skills": matched_skills,
+        "missing_skills": missing_skills
+}
+
+
+
 def main():
     parser = argparse.ArgumentParser(description="Semantic matching between CVs and Job Descriptions")
     parser.add_argument("cv_csv", type=str, help="Path to cleaned CV CSV")

@@ -4,7 +4,7 @@ import torch
 
 
 class CoverLetterGenerator:
-    def __init__(self, model_name: str = "mistralai/Mistral-7B-Instruct-v0.2"):
+    def __init__(self, model_name: str = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"):
         """Initialize a local LLM for summarization and cover letter generation."""
         print(f"Loading model: {model_name}")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -17,7 +17,6 @@ class CoverLetterGenerator:
             "text-generation",
             model=self.model,
             tokenizer=self.tokenizer,
-            device=0 if torch.cuda.is_available() else -1,
         )
 
     def summarize_job(self, job_text: str, max_tokens: int = 200) -> str:
