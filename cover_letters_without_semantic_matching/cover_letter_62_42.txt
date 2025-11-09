@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: useready is looking for 2-3 data scientist to join our team: predictive models in r or python large scale distributed computing and analytics (hadoop, spark) detailed knowledge of sql data cleaning and preparation machine learning and text mining analytics & statistical modelling, nlp azure, aws, google cloud data bricks experience is a plus immediate interviews!! about useready: please visit our website at www.useready.com useready inc was founded in 2011 and our mission is to help organizations succeed by fast tracking their business performance we relentlessly strive towards value-driven innovation using advanced bi, data management, and infrastructure management services with offices in new york, new jersey and bangalore, our global delivery service is enriched with winning strategies, technology expertise and customer fanaticism.
-
-I align with your needs and have experience with Technical, Skills:, Languages, Python, Python.
-
-Sincerely,
-Candidate

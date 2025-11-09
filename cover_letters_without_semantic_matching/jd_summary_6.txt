@@ -1,2 +1,0 @@
-- cyrusone is seeking a talented data scientist who holds a range of data-focused skills both in technical and analytical domains
-- the ideal candidate is adept at processing, cleansing, and verifying the integrity of data used for visualization and analysis.

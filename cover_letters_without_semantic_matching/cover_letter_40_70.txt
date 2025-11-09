@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: work with product, marketing and engineering teams uncovering insights, formulate and test ideas to accelerate our business responsibilities: create factor analyses on customer lifecycle / funnel and conversion, with a focus on product analytics, ranging from onboarding journeys (path analysis) to activation / retention signals partner with data engineering to define requirements for data pipelines and warehouse (snowflake, athena) data models partnering with data science peers to identify gaps, improve quality, and share advanced modeling techniques and learnings work with Product management, and devops as needed to provide saas customer adoption/usage insight to be shared with sales, and marketing organizations perform extensive data validation/quality assurance analysis within large datasets diagnose data-related bugs and ensure they are resolved in a timely manner develop and maintain automated dashboards, metric reports and data visualizations (looker, mixpanel, tableau) and train colleagues to use them support the business with ed hoc reporting develop a high level of expertise with sauce labs data by digging into the details, sources and history of the data requirements: 3+ years experience in data analysis in b2b companies specifically in saras ba or.
-
-I align with your needs and have experience with Operating, Ubuntu,, Windows, Other, Tableau,.
-
-Sincerely,
-Candidate

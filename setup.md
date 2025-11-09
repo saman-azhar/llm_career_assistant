@@ -1,3 +1,4 @@
+
 # Setup Notes
 
 ## 1. Environment Setup (WSL + Python)
@@ -120,3 +121,136 @@ unzip jobs-dataset-from-glassdoor.zip
 ```bash
 pip install jupyter jupyterlab plotly
 ```
+
+---
+
+## 5. Docker & Qdrant Setup (Vector Database Integration)
+
+### Install Docker Desktop on Windows
+
+1. Download from [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/).
+2. During installation, **enable WSL 2 integration** and select your Ubuntu distro.
+
+After installation, verify Docker is running correctly:
+
+```bash
+docker --version
+docker run hello-world
+```
+
+If it runs successfully, Docker is now accessible from WSL.
+
+---
+
+### Fix Docker Permission Issues (If Any)
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+sudo service docker start
+docker ps
+```
+
+---
+
+### Run Qdrant Vector Database (Docker)
+
+```bash
+docker pull qdrant/qdrant
+docker run -p 6333:6333 -v $(pwd)/qdrant_storage:/qdrant/storage qdrant/qdrant
+```
+
+Verify it’s running:
+
+```bash
+docker ps
+```
+
+---
+
+### Python Client Installation and Connection Test
+
+```bash
+pip install qdrant-client
+```
+
+```python
+from qdrant_client import QdrantClient
+
+client = QdrantClient(host="localhost", port=6333)
+print(client.get_collections())
+```
+
+---
+
+### Create and Verify Qdrant Collection (Optional Manual Step)
+
+```python
+from qdrant_client import QdrantClient
+from qdrant_client.models import VectorParams, Distance
+
+client = QdrantClient(host="localhost", port=6333)
+
+client.recreate_collection(
+    collection_name="career_vectors",
+    vectors_config=VectorParams(size=768, distance=Distance.COSINE)
+)
+
+res = client.get_collection("career_vectors")
+print(res.vectors_config)
+```
+
+---
+
+### Confirm Ingestion Pipeline
+
+```bash
+python -m career_assistant.rag_pipeline.ingest
+```
+
+Verify vector count:
+
+```python
+res = client.get_collection("career_vectors")
+print(res.vectors_count)
+```
+
+---
+
+### Optional Cleanup Commands
+
+```bash
+docker stop $(docker ps -q --filter ancestor=qdrant/qdrant)
+docker rm $(docker ps -a -q --filter ancestor=qdrant/qdrant)
+```
+
+---
+
+## 6. FastAPI Launch (Production API for RAG Pipeline)
+
+### Install FastAPI and Uvicorn
+
+```bash
+pip install fastapi uvicorn
+```
+
+### Start FastAPI Server
+
+```bash
+cd career_assistant/api
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+* The API will be accessible at: `http://localhost:8000`
+* Test endpoints via browser or Postman (e.g., `/match_cv_jd`, `/generate_coverletter`)
+* `--reload` enables live code reload during development.
+
+### Example Request (cURL)
+
+```bash
+curl -X POST "http://localhost:8000/match_cv_jd" \
+-H "Content-Type: application/json" \
+-d '{"cv_text": "Python, SQL, Machine Learning", "job_description": "Looking for Data Scientist..."}'
+```
+
+Response will include top matches, similarity scores, and missing skills.

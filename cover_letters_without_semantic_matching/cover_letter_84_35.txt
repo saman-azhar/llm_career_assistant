@@ -1,8 +1,0 @@
-Dear Hiring Manager,
-
-Based on your requirements: a hybrid role in which you will run deep analyses on structured and unstructured data and also build and maintain etls to fetch data into the nurx warehouse you will be asked to work with your peers to determine the best algorithm to solve any given problem, and be able to create your own data structures.
-
-I align with your needs and have experience with Excellent, Highly, Ability, Enthusiastic, Quick.
-
-Sincerely,
-Candidate
