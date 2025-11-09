@@ -1,3 +1,4 @@
+
 # Setup Notes
 
 ## 1. Environment Setup (WSL + Python)
@@ -143,19 +144,10 @@ If it runs successfully, Docker is now accessible from WSL.
 
 ### Fix Docker Permission Issues (If Any)
 
-If you see an error like
-`permission denied while trying to connect to the Docker daemon socket`,
-run the following inside your Ubuntu WSL terminal:
-
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker
 sudo service docker start
-```
-
-Then test again:
-
-```bash
 docker ps
 ```
 
@@ -163,17 +155,10 @@ docker ps
 
 ### Run Qdrant Vector Database (Docker)
 
-Pull and start the latest **Qdrant** container:
-
 ```bash
 docker pull qdrant/qdrant
 docker run -p 6333:6333 -v $(pwd)/qdrant_storage:/qdrant/storage qdrant/qdrant
 ```
-
-This:
-
-* Exposes Qdrant on port `6333`
-* Persists vector data under `qdrant_storage` in your project directory
 
 Verify it’s running:
 
@@ -181,19 +166,13 @@ Verify it’s running:
 docker ps
 ```
 
-You should see a container named `qdrant/qdrant` listed as **Up**.
-
 ---
 
 ### Python Client Installation and Connection Test
 
-Install the official Qdrant client in your virtual environment:
-
 ```bash
 pip install qdrant-client
 ```
-
-Then test connectivity:
 
 ```python
 from qdrant_client import QdrantClient
@@ -202,17 +181,9 @@ client = QdrantClient(host="localhost", port=6333)
 print(client.get_collections())
 ```
 
-Expected output (after ingestion):
-
-```
-collections=[CollectionDescription(name='career_vectors')]
-```
-
 ---
 
 ### Create and Verify Qdrant Collection (Optional Manual Step)
-
-If you need to create the collection manually:
 
 ```python
 from qdrant_client import QdrantClient
@@ -224,49 +195,62 @@ client.recreate_collection(
     collection_name="career_vectors",
     vectors_config=VectorParams(size=768, distance=Distance.COSINE)
 )
-```
 
-Check it exists:
-
-```python
 res = client.get_collection("career_vectors")
 print(res.vectors_config)
-```
-
-Expected output:
-
-```
-size=768 distance=<Distance.COSINE: 'Cosine'>
 ```
 
 ---
 
 ### Confirm Ingestion Pipeline
 
-Run your ingestion script (this will push embeddings into Qdrant):
-
 ```bash
 python -m career_assistant.rag_pipeline.ingest
 ```
 
-Verify the vector count:
+Verify vector count:
 
 ```python
 res = client.get_collection("career_vectors")
 print(res.vectors_count)
 ```
 
-If it prints a numeric value (e.g., `125`), ingestion succeeded.
-
 ---
 
 ### Optional Cleanup Commands
-
-Stop or remove the Qdrant container if needed:
 
 ```bash
 docker stop $(docker ps -q --filter ancestor=qdrant/qdrant)
 docker rm $(docker ps -a -q --filter ancestor=qdrant/qdrant)
 ```
 
+---
 
+## 6. FastAPI Launch (Production API for RAG Pipeline)
+
+### Install FastAPI and Uvicorn
+
+```bash
+pip install fastapi uvicorn
+```
+
+### Start FastAPI Server
+
+```bash
+cd career_assistant/api
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+* The API will be accessible at: `http://localhost:8000`
+* Test endpoints via browser or Postman (e.g., `/match_cv_jd`, `/generate_coverletter`)
+* `--reload` enables live code reload during development.
+
+### Example Request (cURL)
+
+```bash
+curl -X POST "http://localhost:8000/match_cv_jd" \
+-H "Content-Type: application/json" \
+-d '{"cv_text": "Python, SQL, Machine Learning", "job_description": "Looking for Data Scientist..."}'
+```
+
+Response will include top matches, similarity scores, and missing skills.

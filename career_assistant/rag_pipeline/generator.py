@@ -34,21 +34,46 @@ class CoverLetterGenerator:
 
 
     def generate_cover_letter(self, cv_text: str, job_summary: str) -> str:
-        """Generate a cover letter aligning CV to the job summary."""
-        # Truncate overly long inputs
+        """Generate a professional cover letter aligning CV and job summary."""
+
+        # Safety truncation to avoid context overflow
         if len(job_summary) > 4000:
             job_summary = job_summary[:4000]
         if len(cv_text) > 4000:
             cv_text = cv_text[:4000]
 
         prompt = (
-            f"Write a professional cover letter (3 short paragraphs) based on the following:\n\n"
-            f"Job Summary:\n{job_summary}\n\n"
+            f"You are an experienced career assistant helping a candidate apply for jobs.\n\n"
+            f"Job Description:\n{job_summary}\n\n"
             f"Candidate Background:\n{cv_text}\n\n"
-            f"Tone: confident, concise, relevant to the role."
+            f"Write a concise, professional cover letter in three short paragraphs.\n"
+            f"Emphasize overlap between the candidate’s experience and the job requirements.\n"
+            f"Keep the tone confident and natural. Only output the final cover letter text."
         )
-        response = self.generator(prompt, max_new_tokens=400, do_sample=True, temperature=0.7)[0]["generated_text"]
-        return response.strip()
+
+        # Generate response
+        response = self.generator(
+            prompt,
+            max_new_tokens=400,
+            do_sample=True,
+            temperature=0.7,
+            top_p=0.9,
+            pad_token_id=self.tokenizer.eos_token_id,
+        )[0]["generated_text"]
+
+        # --- Post-processing: clean up extra text ---
+        # Sometimes TinyLlama echoes the prompt or adds unwanted preamble
+        cleaned = response
+        if "Dear" in response:
+            cleaned = response.split("Dear", 1)[1]
+            cleaned = "Dear " + cleaned.strip()
+
+        # Remove trailing junk (e.g., duplicated instructions)
+        cleaned = cleaned.split("Tone:")[0].strip()
+        cleaned = cleaned.split("Write a")[0].strip()
+
+        return cleaned
+
 
 
 def main():

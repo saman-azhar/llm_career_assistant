@@ -1,0 +1,44 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/samwise/projects/llm_career_assistant
+plugins: langsmith-0.4.38, anyio-4.11.0
+collected 1 item
+
+career_assistant/tests/test_rag_pipeline.py Loading model: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+
+=== DECISION ===
+Match Score: 91.4% — Strong fit. You should apply.
+
+=== MATCHED SKILLS ===
+['nlp', 'r']
+
+=== MISSING SKILLS ===
+['machine learning']
+
+=== GENERATED COVER LETTER ===
+Dear Hiring Manager,
+
+I am writing to express my interest in the position of [Job Title] at [Company Name]. As a Machine Learning Engineer with experience in [Skill], I am confident that I would be a valuable addition to your team.
+
+My experience in [Skill] is extensive, having worked on a variety of projects for both small and large clients. I have a strong background in developing machine learning models using Python, Transformers, FastAPI, and vector databases. I have a track record of delivering successful projects on time and within budget.
+
+As a Machine Learning Engineer, I am proficient in [Skill] and have worked on projects that have helped clients achieve their goals. For example, I have developed models that have improved [Industry]’s [KPI] by [Percentage].
+
+I am passionate about [My Personal Goal or Interest] and would be excited to contribute to the growth of your company. I am confident that I can bring my skills, experience, and passion to the table and contribute to the success of your team.
+
+Thank you for considering my application. I look forward to the opportunity to discuss my qualifications in more detail.
+
+Sincerely,
+
+[Your Name]
+.
+
+=============================== warnings summary ===============================
+career_assistant/tests/test_rag_pipeline.py::test_rag_pipeline
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+career_assistant/tests/test_rag_pipeline.py::test_rag_pipeline
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================== 1 passed, 2 warnings in 769.15s (0:12:49) ===================
