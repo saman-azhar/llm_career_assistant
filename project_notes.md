@@ -351,20 +351,97 @@ In short — the system now understands *what* the text means and *acts* on it i
 
 ---
 
-## Summary of Progress
-**Week 1:** Data cleaning, title standardization, and exploration complete.  
-**Week 2:** Baseline ML models (LR, SVM) implemented and evaluated.  
-**Week 3:** Implemented semantic matching using transformer embeddings and extracted missing skills to identify CV–JD alignment gaps.
+# Week 5 – Vector Database Integration, RAG Pipeline, and API Deployment
+
+### Key Activities (Updated)
+
+* Transitioned to a **full RAG (Retrieval-Augmented Generation)** architecture using **Qdrant** as the vector database backend.
+* Upgraded embedding model to **`intfloat/e5-base-v2`** for high-quality semantic representation.
+* Integrated **`mistralai/Mistral-7B-Instruct-v0.2`** for instruction-following generation.
+* Implemented **FastAPI service** to expose RAG pipeline endpoints for real-time interaction:
+
+  * **Endpoints:**
+
+    * `/generate_cover_letter` – input CV & JD, returns personalized cover letter.
+    * `/match_cv` – input JD, returns top CV matches with similarity scores.
+    * `/match_jd` – input CV, returns top JD matches with similarity scores.
+    * `/missing_skills` – returns skill gaps per CV compared to top-matched JD.
+  * Supports JSON input and output.
+  * Fully integrated with **Qdrant retrieval** and **Mistral generation**.
+* Refactored pipeline scripts to **modular API-friendly functions**:
+
+  * Embedding generation
+  * Vector insertion and retrieval
+  * Context formatting for LLM prompts
+  * LLM response generation
+* Added **optional model selection** via API parameters (`embedding_model`, `generator_model`) for flexibility in production.
+* Implemented **runtime logging** for requests, retrieval results, and generation outputs to support monitoring and debugging.
+* Updated Docker environment:
+
+  * Qdrant container persists for API queries.
+  * FastAPI container serves RAG pipeline endpoints.
+  * Pipeline validated end-to-end within containerized setup.
 
 ---
 
-**Repository Status:**
+### Improved Semantic Matching & Generation
 
-* All preprocessing, semantic matching, and LLM cover letter scripts refactored for **production and CLI use**.
-* Scripts accept **positional and optional arguments**, support CSV/TXT inputs, and handle batch processing.
-* Semantic embeddings, top N match extraction, and missing skill analysis fully automated.
-* Open-source LLM (`google/flan-t5-small`) integrated for **JD summarization and cover letter drafting**.
-* Outputs consistently saved to structured directories (`outputs/`), ready for downstream evaluation.
-* Environment captured in `requirements.txt`; repository is **pipeline-ready** for end-to-end automation.
+* **Embedding Model:** `intfloat/e5-base-v2` continues to improve alignment accuracy, particularly for cross-domain matches.
+* **Generator Model:** Mistral-7B now produces contextually rich, coherent cover letters using retrieved CV–JD context.
+* **Result Quality:**
+
+  * Top CV–JD matches are more semantically precise.
+  * Missing skills reports remain actionable and clearly highlight improvement areas.
+  * Generated cover letters now incorporate retrieved context, reducing generic or repetitive phrasing.
+* **Performance Observations:**
+
+  * API response times are within acceptable limits for moderate workloads.
+  * Batch processing supported via JSON arrays for CVs or JDs.
+
+---
+
+### Workflow Integration (Updated)
+
+1. **Preprocessing:** Clean CVs and JDs (CSV/TXT) →
+2. **Embedding:** Generate semantic vectors via `e5-base-v2` →
+3. **Vector Storage:** Insert vectors into Qdrant collection →
+4. **Retrieval:** Query top-k similar vectors at runtime →
+5. **Generation:** Feed retrieved context into Mistral →
+6. **API Response:** Return structured outputs (cover letters, top matches, missing skills)
+
+* Entire workflow now **API-ready**, enabling integration with web applications or automation pipelines.
+
+---
+
+### Deliverables (Updated)
+
+* **`rag_pipeline.py`** – Complete RAG pipeline refactored for API and CLI use.
+* **`rag_utils.py`** – Helper functions for embedding, retrieval, context formatting, and generation.
+* **FastAPI Application (`api.py`)** – Exposes endpoints for real-time CV–JD matching, cover letter generation, and skill gap analysis.
+* **Docker Environment** – Qdrant + FastAPI + pipeline scripts containerized for reproducible deployment.
+* **Output Artifacts** – Generated cover letters, similarity scores, and missing skills JSONs validated in API mode.
+
+---
+
+## Summary of Progress
+
+**Week 1:** Data cleaning, title standardization, and exploration complete.
+**Week 2:** Baseline ML models (LR, SVM) implemented and evaluated.
+**Week 3:** Implemented semantic matching using transformer embeddings and extracted missing skills to identify CV–JD alignment gaps.
+**Week 4:** Refactored all scripts for production readiness, CLI usage, and LLM-based cover letter generation (Flan-T5).
+**Week 5:** Upgraded semantic embeddings (`e5-base-v2`) and LLM generator (Mistral-7B-Instruct). Integrated Qdrant vector database for RAG pipeline. Developed **FastAPI endpoints** for real-time CV–JD matching, missing skills analysis, and context-aware cover letter generation. Entire workflow is now containerized, API-ready, and production-deployable.
+
+---
+
+## Repository Status
+
+* All preprocessing, semantic matching, and LLM cover letter scripts refactored for **production, CLI use, and API integration**.
+* Scripts accept **positional and optional arguments**, support CSV/TXT inputs, batch processing, and dynamic model selection.
+* Semantic embeddings, top N match extraction, missing skill analysis, and RAG-based generation fully automated.
+* Open-source LLMs integrated: `google/flan-t5-small` (initial) and `TheBloke/guanaco-7B-H` (production).
+* FastAPI endpoints expose **real-time CV–JD matching, missing skills analysis, and cover letter generation**.
+* Dockerized environment ensures reproducibility, scalability, and containerized deployment for Qdrant + API + pipeline scripts.
+* Outputs consistently saved to structured directories (`outputs/`) and validated for accuracy and coherence.
+* Environment captured in `requirements.txt`; repository is **pipeline-ready for end-to-end automation and production deployment**.
 
 ---

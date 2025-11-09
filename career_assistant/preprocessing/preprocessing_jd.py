@@ -64,14 +64,14 @@ def preprocess_job_data(input_csv: str, output_csv: str, min_desc_len: int = 50)
     df = df.dropna(subset=['Job Description']).drop_duplicates(subset=['Job Description'])
 
     # Simplify titles
-    df['Simplified Job Title'] = df['Job Title'].apply(simplify_job_title)
-    df = df[df['Simplified Job Title'] != 'Other']
+    df['simplified_job_title'] = df['Job Title'].apply(simplify_job_title)
+    df = df[df['simplified_job_title'] != 'Other']
 
     # Clean text
-    df['clean_text'] = df['Job Description'].apply(clean_text)
+    df['cleaned_job_description'] = df['Job Description'].apply(clean_text)
 
     # Filter by minimum description length
-    df = df[df['clean_text'].str.split().apply(len) >= min_desc_len]
+    df = df[df['cleaned_job_description'].str.split().apply(len) >= min_desc_len]
 
     # Save
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
