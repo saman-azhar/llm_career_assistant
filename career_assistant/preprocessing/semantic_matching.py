@@ -5,6 +5,7 @@ import argparse
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
+from career_assistant.mlflow_logger import start_run, log_params, log_metrics
 
 # --- Known skills list ---
 KNOWN_SKILLS = [
@@ -39,6 +40,20 @@ def semantic_matching(cv_csv, job_csv, output_dir, model_name='intfloat/e5-base-
                       top_n=5, cached_embeddings_dir=None):
     """Compute semantic similarity and missing skills analysis."""
     os.makedirs(output_dir, exist_ok=True)
+
+    
+    # --- MLflow run start ---
+
+    with start_run(run_name="semantic_matching") as run_id:
+
+        log_params({
+            "cv_csv": cv_csv,
+            "job_csv": job_csv,
+            "output_dir": output_dir,
+            "model_name": model_name,
+            "top_n": top_n,
+            "cached_embeddings_dir": cached_embeddings_dir
+        })
 
     # --- Load data ---
     df_cv = pd.read_csv(cv_csv)
@@ -144,6 +159,16 @@ def semantic_matching(cv_csv, job_csv, output_dir, model_name='intfloat/e5-base-
     matches_df = pd.DataFrame(expanded_rows)
     matches_df["Top_Score"] = matches_df.groupby("CV_ID")["Match_Score"].transform("max")
     matches_df.to_csv(os.path.join(output_dir, "top_matches_with_missing_skills.csv"), index=False)
+
+    
+    # --- Log metrics ---
+    log_metrics({
+        "num_cv": len(df_cv),
+        "num_jobs": len(df_job),
+        "num_matches": len(matches_df),
+        "max_score": matches_df["Match_Score"].max(),
+        "avg_score": matches_df["Match_Score"].mean()
+    })
 
     print(f"Semantic matching and missing skills analysis saved to {output_dir}")
 

@@ -1,5 +1,4 @@
-# Python
-venv/
+# Python cache / virtualenv
 __pycache__/
 *.pyc
 *.pyo
@@ -7,27 +6,30 @@ __pycache__/
 *.pkl
 *.pt
 *.bin
+venv/
+.venv/
+
+# Logs
 *.log
+logs/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# OS
+# OS files
 .DS_Store
 
-# Environment and logs
+# Config / env
 .env
-.venv/
-logs/
-*.log
 config/*.local.yaml
 
-# Project-specific
+# Data / models / outputs
 data/
+notebooks/
 models/
-archive/
-artifacts/
 outputs/
+artifacts/
+archive/
 semantic_matching_output/
 cover_letters_using_semantic_matching/
 cover_letters_without_semantic_matching/
