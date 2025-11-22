@@ -1,4 +1,6 @@
+# ----------------------
 # Python cache / virtualenv
+# ----------------------
 __pycache__/
 *.pyc
 *.pyo
@@ -9,23 +11,32 @@ __pycache__/
 venv/
 .venv/
 
+# ----------------------
 # Logs
+# ----------------------
 *.log
 logs/
 
-# Jupyter
+# ----------------------
+# Jupyter checkpoints
+# ----------------------
 .ipynb_checkpoints/
 
+# ----------------------
 # OS files
+# ----------------------
 .DS_Store
 
-# Config / env
+# ----------------------
+# Config / environment
+# ----------------------
 .env
 config/*.local.yaml
 
-# Data / models / outputs
+# ----------------------
+# Project outputs / heavy files
+# ----------------------
 data/
-notebooks/
 models/
 outputs/
 artifacts/
@@ -33,10 +44,15 @@ archive/
 semantic_matching_output/
 cover_letters_using_semantic_matching/
 cover_letters_without_semantic_matching/
+mlruns/
 
+# ----------------------
 # Qdrant local storage
+# ----------------------
 qdrant_storage/
 
+# ----------------------
 # Misc / project notes
+# ----------------------
 project_setup.txt
 output.txt

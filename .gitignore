@@ -1,5 +1,8 @@
+# ----------------------
 # Python
+# ----------------------
 venv/
+.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -7,22 +10,30 @@ __pycache__/
 *.pkl
 *.pt
 *.bin
+*.gguf
+*.ggml
 *.log
 
+# ----------------------
 # Jupyter
+# ----------------------
 .ipynb_checkpoints/
+*.nbconvert.ipynb
 
+# ----------------------
 # OS
+# ----------------------
 .DS_Store
 
-# Environment and logs
+# ----------------------
+# Environment & secrets
+# ----------------------
 .env
-.venv/
-logs/
-*.log
 config/*.local.yaml
 
-# Project-specific
+# ----------------------
+# Project-specific outputs
+# ----------------------
 data/
 models/
 archive/
@@ -31,10 +42,21 @@ outputs/
 semantic_matching_output/
 cover_letters_using_semantic_matching/
 cover_letters_without_semantic_matching/
+mlruns/
 
+# ----------------------
 # Qdrant local storage
+# ----------------------
 qdrant_storage/
 
+# ----------------------
 # Misc / project notes
+# ----------------------
 project_setup.txt
 output.txt
+
+# ----------------------
+# IDE / editor
+# ----------------------
+.vscode/
+.idea/

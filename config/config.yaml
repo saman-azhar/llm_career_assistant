@@ -1,7 +1,8 @@
 # === Global Config for Career Assistant ===
 
 # --- Paths ---
-data_paths:
+paths:
+  base_dir: "career_assistant"
   raw_data: "career_assistant/data/raw/"
   processed_data: "career_assistant/data/processed/"
   vector_store: "career_assistant/data/vector_store/default/"
@@ -9,8 +10,9 @@ data_paths:
   qdrant_storage: "./qdrant_storage/"
 
 # --- Embeddings ---
-embedding_model: "sentence-transformers/intfloat/e5-base-v2"
-embedding_dim: 384
+embedding:
+  model_name: "sentence-transformers/intfloat/e5-base-v2"
+  dim: 384
 
 # --- Qdrant Vector Database ---
 qdrant:
@@ -19,6 +21,10 @@ qdrant:
   collection_name: "career_vectors"
   distance_metric: "Cosine"
   recreate_collection: false
+  replication_factor: 1
+  shard_number: 1
+  timeout: 30
+  max_retries: 3
 
 # --- Semantic Matching ---
 semantic_matching:
@@ -37,21 +43,63 @@ generator:
   model_name: "google/flan-t5-small"
   max_length: 200
   min_length: 60
+  temperature: 0.7
+  top_p: 0.9
 
 # --- Docker ---
 docker:
   image_name: "career_assistant"
-  container_port: 8080
-  host_port: 8080
+  dev:
+    host_port: 8000
+    container_port: 8080
+  staging:
+    host_port: 8081
+    container_port: 8080
+  production:
+    host_port: 8080
+    container_port: 8080
 
 # --- Logging ---
 logging:
   level: "INFO"
   log_to_file: true
   log_file: "logs/app.log"
+  log_to_console: true
+  max_bytes: 5242880  # 5MB
+  backup_count: 5
 
 # --- Environment ---
-environment:
-  dev: true
-  staging: false
-  production: false
+environment: "dev"  # options: dev | staging | production
+
+# --- Environment-specific overrides ---
+environments:
+  dev:
+    semantic_matching:
+      batch_size: 16
+      top_n: 3
+    generator:
+      max_length: 150
+      min_length: 40
+    logging:
+      level: "DEBUG"
+  staging:
+    semantic_matching:
+      batch_size: 32
+      top_n: 5
+    generator:
+      max_length: 200
+      min_length: 60
+    logging:
+      level: "INFO"
+  production:
+    semantic_matching:
+      batch_size: 64
+      top_n: 10
+    generator:
+      max_length: 300
+      min_length: 100
+    logging:
+      level: "WARNING"
+    qdrant:
+      timeout: 60
+      max_retries: 5

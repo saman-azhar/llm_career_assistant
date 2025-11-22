@@ -6,8 +6,10 @@ career_assistant
 config
 docker-compose.yml
 makefile
+mlruns
 notebooks
 output.txt
+phi-2.Q4_K_M.gguf
 project_notes.md
 project_setup.txt
 qdrant_storage
@@ -51,6 +53,7 @@ utils
 ./career_assistant/__pycache__:
 __init__.cpython-312.pyc
 main.cpython-312.pyc
+mlflow_logger.cpython-312.pyc
 
 ./career_assistant/api:
 __init__.py
@@ -168,6 +171,7 @@ test_rag_pipeline.py
 __init__.cpython-312.pyc
 test_preprocessing.cpython-312-pytest-8.4.2.pyc
 test_rag_pipeline.cpython-312-pytest-8.4.2.pyc
+test_rag_pipeline.cpython-312.pyc
 
 ./career_assistant/utils:
 __init__.py
@@ -176,6 +180,16 @@ logger.py
 
 ./config:
 config.yaml
+
+./mlruns:
+0
+262089942464914278
+
+./mlruns/0:
+meta.yaml
+
+./mlruns/262089942464914278:
+meta.yaml
 
 ./notebooks:
 01_job_data_preprocessing.ipynb
@@ -231,14 +245,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/0ea8fdf0-1794-4890-a06c-5cb7bd9de45d/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/0ea8fdf0-1794-4890-a06c-5cb7bd9de45d/payload_storage:
@@ -271,14 +285,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/239bba47-2293-4aa7-b0e2-d4eb943c7b99/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/239bba47-2293-4aa7-b0e2-d4eb943c7b99/payload_storage:
@@ -311,14 +325,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/4f288013-f387-4a50-ab4b-8567d07b05ea/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/4f288013-f387-4a50-ab4b-8567d07b05ea/payload_storage:
@@ -351,14 +365,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/50c4d424-48a2-4380-8c05-ebe6af3dc7d0/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/50c4d424-48a2-4380-8c05-ebe6af3dc7d0/payload_storage:
@@ -391,14 +405,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/56fafa30-28c6-4fc8-830e-ea1421d7bf65/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/56fafa30-28c6-4fc8-830e-ea1421d7bf65/payload_storage:
@@ -431,14 +445,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/57f82fc5-f749-4893-add1-7d7f3f17fa82/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/57f82fc5-f749-4893-add1-7d7f3f17fa82/payload_storage:
@@ -471,14 +485,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/9fdbd2fb-f01e-43df-a927-d83e93cfb563/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/9fdbd2fb-f01e-43df-a927-d83e93cfb563/payload_storage:
@@ -511,14 +525,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_assistant/0/segments/ea5e84c4-c797-4fc4-a02b-92b9f81ef891/payload_index:
-000028.log
+000048.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000029
-OPTIONS-000027
-OPTIONS-000031
+MANIFEST-000049
+OPTIONS-000047
+OPTIONS-000051
 config.json
 
 ./qdrant_storage/collections/career_assistant/0/segments/ea5e84c4-c797-4fc4-a02b-92b9f81ef891/payload_storage:
@@ -579,14 +593,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/385901f9-4f40-4f1b-927e-7359b0b2d78b/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/385901f9-4f40-4f1b-927e-7359b0b2d78b/payload_storage:
@@ -619,14 +633,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/71521c79-1f2f-41e0-9022-249c62d633b7/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/71521c79-1f2f-41e0-9022-249c62d633b7/payload_storage:
@@ -659,14 +673,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/94e4ddca-1a42-4ec6-a2f3-fa321220224f/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/94e4ddca-1a42-4ec6-a2f3-fa321220224f/payload_storage:
@@ -699,14 +713,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/a919ade4-87c9-4841-ba97-788e5c2a7b37/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/a919ade4-87c9-4841-ba97-788e5c2a7b37/payload_storage:
@@ -739,14 +753,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/ad1303d8-dfc7-46f4-9734-49ca2e4885e4/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/ad1303d8-dfc7-46f4-9734-49ca2e4885e4/payload_storage:
@@ -779,14 +793,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/aea9e900-aece-4cfa-a99a-56286ed48bc0/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/aea9e900-aece-4cfa-a99a-56286ed48bc0/payload_storage:
@@ -819,14 +833,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/ee366ee0-bcc1-4d52-9b71-19c225bb358b/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/ee366ee0-bcc1-4d52-9b71-19c225bb358b/payload_storage:
@@ -859,14 +873,14 @@ vector_storage
 version.info
 
 ./qdrant_storage/collections/career_vectors/0/segments/fa5b8380-2052-4bdc-b5b7-14622e63816e/payload_index:
-000032.log
+000052.log
 CURRENT
 IDENTITY
 LOCK
 LOG
-MANIFEST-000033
-OPTIONS-000031
-OPTIONS-000035
+MANIFEST-000053
+OPTIONS-000051
+OPTIONS-000055
 config.json
 
 ./qdrant_storage/collections/career_vectors/0/segments/fa5b8380-2052-4bdc-b5b7-14622e63816e/payload_storage:

@@ -8,6 +8,13 @@ import nltk
 import argparse
 import os
 
+from career_assistant.mlflow_logger import start_run, log_params, log_metrics, log_artifacts_from_path
+
+from career_assistant.utils.file_utils import read_csv, write_csv
+from career_assistant.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 # --- NLTK setup ---
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
@@ -54,31 +61,46 @@ def clean_text(text: str) -> str:
 
 # --- Main preprocessing ---
 def preprocess_job_data(input_csv: str, output_csv: str, min_desc_len: int = 50) -> pd.DataFrame:
-    df = pd.read_csv(input_csv)
+    with start_run(run_name="preprocess_job_data") as run:
+        log_params({
+            "input_csv": input_csv,
+            "output_csv": output_csv,
+            "min_desc_len": min_desc_len
+        })
 
-    # Keep relevant columns
-    columns_to_keep = ['Job Title', 'Job Description', 'Company Name', 'Location']
-    df = df[columns_to_keep].copy()
+        logger.info(f"Loading job data from {input_csv}")
+        df = read_csv(input_csv)
+        initial_count = len(df)
+        log_metrics({"initial_job_count": initial_count})
 
-    # Drop empty descriptions & duplicates
-    df = df.dropna(subset=['Job Description']).drop_duplicates(subset=['Job Description'])
+        # Keep relevant columns
+        columns_to_keep = ['Job Title', 'Job Description', 'Company Name', 'Location']
+        df = df[columns_to_keep].copy()
 
-    # Simplify titles
-    df['simplified_job_title'] = df['Job Title'].apply(simplify_job_title)
-    df = df[df['simplified_job_title'] != 'Other']
+        # Drop empty descriptions & duplicates
+        df = df.dropna(subset=['Job Description']).drop_duplicates(subset=['Job Description'])
+        after_cleaning = len(df)
+        log_metrics({"after_dropna_duplicates": after_cleaning})
 
-    # Clean text
-    df['cleaned_job_description'] = df['Job Description'].apply(clean_text)
+        # Simplify titles
+        df['simplified_job_title'] = df['Job Title'].apply(simplify_job_title)
+        df = df[df['simplified_job_title'] != 'Other']
+        after_title_filter = len(df)
+        log_metrics({"after_title_filter": after_title_filter})
 
-    # Filter by minimum description length
-    df = df[df['cleaned_job_description'].str.split().apply(len) >= min_desc_len]
+        # Clean text
+        df['cleaned_job_description'] = df['Job Description'].apply(clean_text)
+        df = df[df['cleaned_job_description'].str.split().apply(len) >= min_desc_len]
+        after_length_filter = len(df)
+        log_metrics({"after_min_desc_len_filter": after_length_filter})
 
-    # Save
-    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
-    df.to_csv(output_csv, index=False)
-    print(f"Preprocessed job data saved to {output_csv}")
-    return df
-
+        # Save
+        os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+        write_csv(df, output_csv)
+        logger.info(f"Preprocessed job data saved to {output_csv}")
+        log_artifacts_from_path(output_csv)
+        print(f"Preprocessed job data saved to {output_csv}")
+        return df
 
 def main():
     parser = argparse.ArgumentParser(description="Preprocess job descriptions CSV.")
@@ -101,10 +123,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# usage
-# python job_preprocessing.py data/glassdoor_jobs.csv data/cleaned_job_data_final.csv
-
-# optional filters:
-# python preprocessing_jd.py data/glassdoor_jobs.csv data/cleaned_job_data_final.csv --min_desc_len 100
-

@@ -7,6 +7,14 @@ import nltk
 import argparse
 import os
 
+from career_assistant.mlflow_logger import start_run, log_params, log_metrics, log_artifacts_from_path
+
+from career_assistant.utils.file_utils import read_csv, write_csv
+from career_assistant.utils.logger import get_logger
+
+
+logger = get_logger(__name__)
+
 # --- NLTK Setup ---
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
@@ -47,31 +55,50 @@ def preprocess_resumes(input_csv: str, output_csv: str,
                        categories: list = None) -> pd.DataFrame:
     """
     Load resume dataset, clean text, filter duplicates, remove short resumes, filter categories.
-    Saves cleaned dataset to output_csv.
+    Saves cleaned dataset to output_csv and logs metrics to MLflow.
     """
-    df = pd.read_csv(input_csv)
+    with start_run(run_name="preprocess_resumes") as run:
+        log_params({
+            "input_csv": input_csv,
+            "output_csv": output_csv,
+            "min_resume_len": min_resume_len,
+            "min_word_count": min_word_count,
+            "categories": categories
+        })
 
-    # Drop duplicates and short/empty resumes
-    df = df.drop_duplicates(subset='Resume')
-    df = df.dropna(subset=['Resume'])
-    df = df[df['Resume'].str.len() >= min_resume_len].reset_index(drop=True)
+        logger.info(f"Loading resumes from {input_csv}")
+        df = read_csv(input_csv)
+        initial_count = len(df)
+        log_metrics({"initial_resume_count": initial_count})
 
-    # Clean resume text
-    df['cleaned_resume'] = df['Resume'].apply(clean_resume)
+        # Drop duplicates and short/empty resumes
+        df = df.drop_duplicates(subset='Resume')
+        df = df.dropna(subset=['Resume'])
+        df = df[df['Resume'].str.len() >= min_resume_len].reset_index(drop=True)
+        after_length_filter = len(df)
+        log_metrics({"after_length_filter": after_length_filter})
 
-    # Drop resumes with fewer than min_word_count words after cleaning
-    df['text_length'] = df['cleaned_resume'].apply(lambda x: len(x.split()))
-    df = df[df['text_length'] >= min_word_count].reset_index(drop=True)
+        # Clean resume text
+        df['cleaned_resume'] = df['Resume'].apply(clean_resume)
+        df['text_length'] = df['cleaned_resume'].apply(lambda x: len(x.split()))
+        df = df[df['text_length'] >= min_word_count].reset_index(drop=True)
+        after_word_count_filter = len(df)
+        log_metrics({"after_word_count_filter": after_word_count_filter})
 
-    # Filter by categories if provided
-    if categories:
-        df = filter_categories(df, categories)
+        # Filter by categories if provided
+        if categories:
+            df = filter_categories(df, categories)
+            after_category_filter = len(df)
+            log_metrics({"after_category_filter": after_category_filter})
+            logger.info(f"Filtering resumes for categories: {categories}")
 
-    # Save
-    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
-    df.to_csv(output_csv, index=False)
-    print(f"Preprocessed resumes saved to {output_csv}")
-    return df
+        # Save
+        os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+        write_csv(df, output_csv)
+        logger.info(f"Preprocessed resumes saved to {output_csv}")
+        log_artifacts_from_path(output_csv)
+        print(f"Preprocessed resumes saved to {output_csv}")
+        return df
 
 def main():
     parser = argparse.ArgumentParser(description="Preprocess resume CSV file.")
@@ -100,9 +127,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# usage
-# python preprocessing_cv.py data/UpdatedResumeDataSet.csv data/cleaned_resume_data_final.csv
-
-# optional filters:
-# python preprocessing_cv.py data/UpdatedResumeDataSet.csv data/cleaned_resume_data_final.csv --min_word_count 120 --categories "Data Science" "Data Analyst"

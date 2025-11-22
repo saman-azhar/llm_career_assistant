@@ -4,10 +4,6 @@ services:
   api:
     build: .
     container_name: career_assistant_api
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app  # Mount current directory for hot reload
     environment:
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333

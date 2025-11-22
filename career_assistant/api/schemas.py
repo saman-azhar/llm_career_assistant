@@ -8,6 +8,6 @@ class MatchRequest(BaseModel):
 class MatchResponse(BaseModel):
     match_score: float
     verdict: str
-    missing_skills: Optional[List[str]]
-    matched_skills: Optional[List[str]]
-    cover_letter: Optional[str]
+    missing_skills: Optional[List[str]] = []
+    matched_skills: Optional[List[str]] = []
+    cover_letter: Optional[str] = None

@@ -1,63 +1,74 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-import torch
+# career_assistant/rag_pipeline/generator.py
+from transformers import AutoTokenizer, pipeline, AutoModelForSeq2SeqLM
+from career_assistant.mlflow_logger import start_run, log_params, log_metrics
+from career_assistant.utils.logger import get_logger
+from career_assistant.utils.chunking import chunk_text
+
+logger = get_logger(__name__)
 
 class CoverLetterGenerator:
-    def __init__(self, model_name="TheBloke/guanaco-7B-HF", device=None):
-        """Initialize a stronger LLM on AWS (GPU recommended)."""
-        self.device = device if device else ("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"Loading model {model_name} on device {self.device}")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name,
-                                                          device_map="auto" if self.device=="cuda" else None,
-                                                          torch_dtype=torch.float16 if self.device=="cuda" else torch.float32)
-        self.generator = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, device=0 if self.device=="cuda" else -1)
+    def __init__(self, model_name="google/flan-t5-large", log_mlflow=True, chunk_size=400, overlap=50):
+        self.model_name = model_name
+        self.log_mlflow = log_mlflow
+        self.device = "cpu"
+        self.chunk_size = chunk_size
+        self.overlap = overlap
 
+        try:
+            logger.info(f"Loading model {model_name} on CPU...")
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+            self.generator = pipeline(
+                "text2text-generation",
+                model=self.model,
+                tokenizer=self.tokenizer,
+                device=-1  # CPU
+            )
+            logger.info(f"Model {model_name} loaded successfully.")
+        except Exception as e:
+            logger.error(f"Failed to load model {model_name}: {e}")
+            raise
 
-    def summarize_job(self, job_text: str, max_tokens: int = 200):
-        if len(job_text) > 4000: job_text = job_text[:4000]
-        prompt = f"Summarize the following job description into 3-4 concise bullet points:\n{job_text}\nBullet points:"
-        return self.generator(prompt, max_new_tokens=max_tokens, do_sample=False)[0]["generated_text"].strip()
+    def generate_cover_letter(self, cv_text: str, job_text: str, max_tokens=350):
+        if not cv_text.strip() or not job_text.strip():
+            logger.warning("Received empty CV or job text for cover letter generation")
+            raise ValueError("CV text and job description text cannot be empty.")
 
+        # Optional chunking for very long texts
+        cv_chunks = chunk_text(cv_text, self.chunk_size, self.overlap)
+        job_chunks = chunk_text(job_text, self.chunk_size, self.overlap)
 
-    def generate_cover_letter(self, cv_text: str, job_summary: str, max_tokens=400):
-        if len(cv_text) > 4000: cv_text = cv_text[:4000]
-        if len(job_summary) > 4000: job_summary = job_summary[:4000]
+        # Concatenate top chunks to fit max token limit
+        cv_prompt = " ".join(cv_chunks[:3])
+        job_prompt = " ".join(job_chunks[:3])
+        prompt = f"Write a professional cover letter using CV: {cv_prompt} and JD: {job_prompt}. Highlight matching skills and experience."
 
-        prompt = (
-            f"You are a professional career assistant that writes polished cover letters.\n\n"
-            f"Job Description Summary:\n{job_summary}\n\n"
-            f"Candidate Background:\n{cv_text}\n\n"
-            f"Instructions:\n"
-            f"- Write a concise cover letter in 3 short paragraphs.\n"
-            f"- Use confident, professional tone suitable for technical jobs.\n"
-            f"- Highlight exact skills that match the job requirements.\n"
-            f"- Mention achievements where possible.\n"
-            f"- Do NOT include generic phrases; focus on specifics.\n"
-            f"- Output only the cover letter, ready to send."
-        )
+        logger.info(f"Generating cover letter (CV chunks: {len(cv_chunks)}, JD chunks: {len(job_chunks)})")
+        response = ""
 
-        # Generate response
-        response = self.generator(prompt, max_new_tokens=max_tokens, do_sample=True, temperature=0.7, top_p=0.9)[0]["generated_text"]
-        return response.strip()
-        # --- Post-processing: clean up extra text ---
-        # Sometimes TinyLlama echoes the prompt or adds unwanted preamble
-        # cleaned = response
-        # if "Dear" in response:
-        #     cleaned = response.split("Dear", 1)[1]
-        #     cleaned = "Dear " + cleaned.strip()
+        try:
+            if self.log_mlflow:
+                with start_run(run_name="generate_cover_letter") as run:
+                    log_params({
+                        "model_name": self.model.config.name_or_path,
+                        "cv_text_length": len(cv_text),
+                        "job_text_length": len(job_text),
+                        "num_cv_chunks": len(cv_chunks),
+                        "num_job_chunks": len(job_chunks),
+                        "max_tokens": max_tokens
+                    })
+                    response = self.generator(
+                        prompt,
+                        max_new_tokens=max_tokens,
+                        temperature=0.9,
+                        top_p=0.9
+                    )[0]["generated_text"].strip()
+                    log_metrics({"generated_text_length": len(response.split())})
+            else:
+                response = self.generator(prompt, max_new_tokens=max_tokens, temperature=0.9, top_p=0.9)[0]["generated_text"].strip()
+        except Exception as e:
+            logger.error(f"Error during cover letter generation: {e}")
+            raise
 
-        # # Remove trailing junk (e.g., duplicated instructions)
-        # cleaned = cleaned.split("Tone:")[0].strip()
-        # cleaned = cleaned.split("Write a")[0].strip()
-
-        # return cleaned
-
-
-
-def main():
-    """Placeholder for manual testing."""
-    pass
-
-
-if __name__ == "__main__":
-    main()
+        logger.info(f"Cover letter generation completed (words: {len(response.split())})")
+        return response

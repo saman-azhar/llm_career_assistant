@@ -1,15 +1,17 @@
 import os
 import pandas as pd
 import pytest
+from unittest.mock import patch
 
 from career_assistant.preprocessing.preprocessing_cv import clean_resume, preprocess_resumes
 from career_assistant.preprocessing.preprocessing_jd import clean_text, simplify_job_title, preprocess_job_data
 from career_assistant.preprocessing.semantic_matching import extract_skills, compute_similarity_runtime
+from career_assistant import mlflow_logger
 
 
 @pytest.fixture(scope="module")
 def tmp_csv_dir(tmp_path_factory):
-    """Fixture for temporary CSV file directory"""
+    """Fixture for temporary CSV file directory."""
     return tmp_path_factory.mktemp("data")
 
 
@@ -30,6 +32,11 @@ def test_clean_resume_removes_noise():
     assert isinstance(cleaned, str)
 
 
+def test_clean_resume_empty_string():
+    cleaned = clean_resume("")
+    assert cleaned == ""
+
+
 def test_preprocess_resumes(tmp_csv_dir):
     df = pd.DataFrame({
         "Category": ["Data Science", "Marketing"],
@@ -42,7 +49,13 @@ def test_preprocess_resumes(tmp_csv_dir):
     output_csv = tmp_csv_dir / "cleaned_resumes.csv"
     df.to_csv(input_csv, index=False)
 
-    result = preprocess_resumes(str(input_csv), str(output_csv), min_word_count=3, categories=["Data Science"])
+    with patch.object(mlflow_logger, 'log_params') as mock_log_params, \
+         patch.object(mlflow_logger, 'log_metrics') as mock_log_metrics:
+        result = preprocess_resumes(str(input_csv), str(output_csv), min_word_count=3, categories=["Data Science"])
+
+        # Verify MLflow logging calls
+        mock_log_params.assert_called()
+        mock_log_metrics.assert_not_called()  # preprocess doesn't log metrics by default
 
     print("\n=== PREPROCESSED RESUME DF ===")
     print(result.head())
@@ -67,6 +80,11 @@ def test_clean_text_basic():
     assert "machine" in cleaned
     assert "!" not in cleaned
     assert isinstance(cleaned, str)
+
+
+def test_clean_text_empty():
+    cleaned = clean_text("")
+    assert cleaned == ""
 
 
 def test_simplify_job_title_variants():
@@ -105,7 +123,9 @@ def test_preprocess_job_data(tmp_csv_dir):
     output_csv = tmp_csv_dir / "cleaned_jobs.csv"
     df.to_csv(input_csv, index=False)
 
-    result = preprocess_job_data(str(input_csv), str(output_csv), min_desc_len=3)
+    with patch.object(mlflow_logger, 'log_params') as mock_log_params:
+        result = preprocess_job_data(str(input_csv), str(output_csv), min_desc_len=3)
+        mock_log_params.assert_called()
 
     print("\n=== PREPROCESSED JOB DF ===")
     print(result.head())
@@ -131,6 +151,11 @@ def test_extract_skills_detects_keywords():
     assert "tensorflow" in skills
 
 
+def test_extract_skills_no_known_skills():
+    skills = extract_skills("Marketing and sales experience")
+    assert skills == []
+
+
 def test_compute_similarity_runtime_logic():
     cv = "Python, FastAPI, Transformers, and NLP experience"
     jd = "Looking for an NLP Engineer skilled in Python and model deployment"
@@ -143,3 +168,10 @@ def test_compute_similarity_runtime_logic():
     assert isinstance(result["matched_skills"], list)
     assert isinstance(result["missing_skills"], list)
     assert "python" in result["matched_skills"]
+
+
+def test_compute_similarity_runtime_empty_cv_jd():
+    result = compute_similarity_runtime("", "")
+    assert result["similarity_score"] >= 0.0
+    assert result["matched_skills"] == []
+    assert result["missing_skills"] == []
