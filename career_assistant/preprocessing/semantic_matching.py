@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import re
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
@@ -37,9 +38,14 @@ KNOWN_SKILLS = [
 
 
 def extract_skills(text: str):
-    """Extract known skills from a single text string."""
-    text = str(text).lower()
-    return [skill for skill in KNOWN_SKILLS if skill in text]
+    found = []
+    # Extract words as separate tokens
+    words = re.findall(r'\b\w+\b', text.lower())
+    for skill in KNOWN_SKILLS:
+        if skill in words:
+            found.append(skill)
+    return found
+
 
 
 def compute_similarity_runtime(cv_text: str, jd_text: str, model_name: str = "intfloat/e5-base-v2"):

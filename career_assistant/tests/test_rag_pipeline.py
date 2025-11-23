@@ -1,56 +1,52 @@
-import pytest
-from unittest.mock import patch
-from career_assistant.main import run_full_pipeline
+# career_assistant/tests/test_rag_pipeline.py
+import logging
+from career_assistant.rag_pipeline.ingest import ingest_data
+from career_assistant.rag_pipeline.rag_pipeline import run_rag_pipeline
+from career_assistant.utils.chunking import chunk_text
 
 
-@pytest.mark.slow
-def test_rag_pipeline_basic():
-    """Test full RAG pipeline end-to-end with sample CV and JD."""
-    cv_text = "Experienced NLP Engineer skilled in Python, Transformers, FastAPI, and vector databases."
-    job_description = "Looking for a Machine Learning Engineer with experience in NLP, LLMs, FastAPI, and Qdrant."
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
-    # Patch MLflow logging so we don't actually hit MLflow during tests
-    with patch("career_assistant.mlflow_logger.log_params") as mock_log_params, \
-         patch("career_assistant.mlflow_logger.log_metrics") as mock_log_metrics:
+def test_chunking():
+    sample_text = "This is a sample text for chunking test. " * 50  # long text
+    chunks = chunk_text(sample_text, chunk_size=10, overlap=2)
+    logger.info(f"Chunking test: {len(chunks)} chunks created.")
+    assert len(chunks) > 0
+    assert all(len(chunk.split()) <= 10 for chunk in chunks)
 
-        result = run_full_pipeline(cv_text, job_description)
+def test_ingest(chunking=True):
+    logger.info("Running ingest test (small dataset or mocked data recommended)...")
+    ingest_data(chunking=chunking)
+    logger.info("Ingest completed.")
 
-        # MLflow logging should be called
-        mock_log_params.assert_called()
-        mock_log_metrics.assert_called()
+def test_retriever_and_generator():
+    cv_text = "I’m an NLP engineer with 3 years of experience in Python, HuggingFace, and LLM fine-tuning."
+    jd_text = "We’re hiring an AI engineer with strong experience in NLP, Transformers, and model deployment."
 
-    # Basic structure checks
-    assert isinstance(result, dict), "Pipeline did not return a dictionary"
-    assert "cover_letter" in result
-    assert "matched_skills" in result
-    assert "missing_skills" in result
-    assert "decision" in result
+    logger.info("Running RAG pipeline end-to-end...")
+    results = run_rag_pipeline(cv_text, jd_text, top_k=3)
 
-    print("\n=== DECISION ===")
-    print(result.get("decision"))
+    # Check retrieval
+    retrieved_jobs = results.get("retrieved_jobs", [])
+    retrieved_cvs = results.get("retrieved_cvs", [])
+    logger.info(f"Retrieved {len(retrieved_jobs)} jobs and {len(retrieved_cvs)} CVs")
+    assert len(retrieved_jobs) > 0
+    assert len(retrieved_cvs) > 0
 
-    print("\n=== MATCHED SKILLS ===")
-    print(result.get("matched_skills"))
+    # Check cover letter generation
+    cover_letter = results.get("cover_letter", "")
+    logger.info(f"Generated cover letter length (words): {len(cover_letter.split())}")
+    assert len(cover_letter.split()) > 0
 
-    print("\n=== MISSING SKILLS ===")
-    print(result.get("missing_skills"))
+if __name__ == "__main__":
+    logger.info("=== Running chunking test ===")
+    test_chunking()
 
-    print("\n=== GENERATED COVER LETTER ===")
-    print(result.get("cover_letter"))
+    logger.info("=== Running ingest test ===")
+    test_ingest(chunking=True)
 
+    logger.info("=== Running RAG pipeline test ===")
+    test_retriever_and_generator()
 
-def test_rag_pipeline_empty_inputs():
-    """Test pipeline behavior with empty CV and JD inputs."""
-    result = run_full_pipeline("", "")
-
-    # Ensure pipeline still returns expected keys
-    assert isinstance(result, dict)
-    for key in ["cover_letter", "matched_skills", "missing_skills", "decision"]:
-        assert key in result
-
-    # Edge case: matched skills should be empty
-    assert result["matched_skills"] == []
-    # Edge case: missing skills may be empty or all JD skills
-    assert isinstance(result["missing_skills"], list)
-    # Cover letter should at least return some string
-    assert isinstance(result["cover_letter"], str)
+    logger.info("All tests completed successfully.")

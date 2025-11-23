@@ -1,10 +1,13 @@
 import yaml
 from pathlib import Path
+import os
 
 class Config:
-    def __init__(self, env: str = None, config_path: str = "config/configs.yml"):
+    def __init__(self, env: str = None, config_path: str = None):
         self.env = env or "dev"
-        self.config_path = Path(config_path)
+        # Use the project-root-relative path if nothing else is passed
+        project_root = Path(__file__).parent.parent.parent.resolve()
+        self.config_path = Path(config_path or project_root / "config/config.yml")
         if not self.config_path.exists():
             raise FileNotFoundError(f"Config file not found: {self.config_path}")
 
@@ -35,3 +38,10 @@ class Config:
 
     def all(self):
         return self.cfg
+    
+    def load_yaml_config(self):
+        """Return the loaded YAML config."""
+        return self.cfg
+
+
+

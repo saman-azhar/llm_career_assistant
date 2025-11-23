@@ -6,8 +6,9 @@ from nltk.stem import WordNetLemmatizer
 import nltk
 import argparse
 import os
+import mlflow
 
-from career_assistant.mlflow_logger import start_run, log_params, log_metrics, log_artifacts_from_path
+from career_assistant.mlflow_logger import start_run, log_params, log_metrics
 
 from career_assistant.utils.file_utils import read_csv, write_csv
 from career_assistant.utils.logger import get_logger
@@ -96,7 +97,7 @@ def preprocess_resumes(input_csv: str, output_csv: str,
         os.makedirs(os.path.dirname(output_csv), exist_ok=True)
         write_csv(df, output_csv)
         logger.info(f"Preprocessed resumes saved to {output_csv}")
-        log_artifacts_from_path(output_csv)
+        mlflow.log_artifact(output_csv)
         print(f"Preprocessed resumes saved to {output_csv}")
         return df
 

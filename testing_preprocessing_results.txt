@@ -1,0 +1,52 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0
+rootdir: /home/samwise/projects/llm_career_assistant
+plugins: langsmith-0.4.38, anyio-4.11.0
+collected 11 items
+
+career_assistant/tests/test_preprocessing.py 
+=== CLEANED RESUME SAMPLE ===
+experienced ai engineer python fastapi nlp.
+..[2025-11-23 21:53:19] [INFO] [career_assistant.preprocessing.preprocessing_cv] - Loading resumes from /tmp/pytest-of-samwise/pytest-4/data0/input_resumes.csv
+[2025-11-23 21:53:19] [INFO] [career_assistant.preprocessing.preprocessing_cv] - Filtering resumes for categories: ['Data Science']
+[2025-11-23 21:53:19] [INFO] [career_assistant.preprocessing.preprocessing_cv] - Preprocessed resumes saved to /tmp/pytest-of-samwise/pytest-4/data0/cleaned_resumes.csv
+Preprocessed resumes saved to /tmp/pytest-of-samwise/pytest-4/data0/cleaned_resumes.csv
+
+=== PREPROCESSED RESUME DF ===
+       Category  ... text_length
+0  Data Science  ...           6
+
+[1 rows x 4 columns]
+.
+=== CLEANED JD TEXT ===
+machine learning engineer build model python tensorflow
+..
+=== SIMPLIFIED TITLES ===
+['Machine Learning Engineer', 'Data Scientist', 'Data Engineer', 'Data Analyst', 'Software Engineer', 'Other']
+.[2025-11-23 21:53:19] [INFO] [career_assistant.preprocessing.preprocessing_jd] - Loading job data from /tmp/pytest-of-samwise/pytest-4/data0/input_jobs.csv
+[2025-11-23 21:53:19] [INFO] [career_assistant.preprocessing.preprocessing_jd] - Preprocessed job data saved to /tmp/pytest-of-samwise/pytest-4/data0/cleaned_jobs.csv
+Preprocessed job data saved to /tmp/pytest-of-samwise/pytest-4/data0/cleaned_jobs.csv
+
+=== PREPROCESSED JOB DF ===
+           Job Title  ...                        cleaned_job_description
+0     Data Scientist  ...                  analyze data python technique
+1  Marketing Manager  ...  manage brand awareness campaign social medium
+
+[2 rows x 6 columns]
+.
+=== EXTRACTED SKILLS ===
+['python', 'sql', 'tensorflow']
+..[2025-11-23 21:53:31] [INFO] [career_assistant.preprocessing.semantic_matching] - Similarity: 0.858, Matched skills: ['nlp', 'python'], Missing skills: []
+
+=== SIMILARITY RESULT ===
+{'similarity_score': 0.8576593399047852, 'matched_skills': ['nlp', 'python'], 'missing_skills': []}
+.[2025-11-23 21:53:48] [INFO] [career_assistant.preprocessing.semantic_matching] - Similarity: 1.000, Matched skills: [], Missing skills: []
+.
+
+=============================== warnings summary ===============================
+../venv/lib/python3.12/site-packages/mlflow/tracking/_tracking_service/utils.py:140
+  /home/samwise/projects/venv/lib/python3.12/site-packages/mlflow/tracking/_tracking_service/utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+    return FileStore(store_uri, store_uri)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 11 passed, 1 warning in 39.56s ========================

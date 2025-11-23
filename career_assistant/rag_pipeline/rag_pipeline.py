@@ -3,6 +3,17 @@ from career_assistant.rag_pipeline.retriever import Retriever
 from career_assistant.rag_pipeline.generator import CoverLetterGenerator
 from career_assistant.mlflow_logger import start_run, log_params, log_metrics
 from career_assistant.utils.logger import get_logger
+from career_assistant.utils.config import Config
+
+import mlflow
+
+config = Config(env="dev").load_yaml_config()
+
+mlflow_cfg = config.get("mlflow", {})
+
+mlflow.set_tracking_uri(mlflow_cfg["tracking_uri"])
+mlflow.set_experiment(mlflow_cfg["experiment_name"])
+
 
 logger = get_logger(__name__)
 

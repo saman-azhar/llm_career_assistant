@@ -46,6 +46,20 @@ generator:
   temperature: 0.7
   top_p: 0.9
 
+# --- Postgres Database ---
+postgres:
+  user: "mlflow"
+  password: "mlflowpass"
+  db: "mlflow_db"
+  host: "postgres"   # matches docker-compose service name
+  port: 5432
+
+# --- MLflow Tracking ---
+mlflow:
+  tracking_uri: "http://mlflow:5000"  # use Docker service name, not localhost
+  backend_store_uri: "postgresql://mlflow:mlflowpass@postgres:5432/mlflow_db"
+  experiment_name: "rag_pipeline"
+  
 # --- Docker ---
 docker:
   image_name: "career_assistant"
