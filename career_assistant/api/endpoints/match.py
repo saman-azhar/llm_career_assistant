@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from career_assistant.api.utils import evaluate_cv_job
 from career_assistant.rag_pipeline.generator import CoverLetterGenerator
 from career_assistant.utils.logger import get_logger
-from career_assistant.config import Config
+from career_assistant.utils.config import Config
 import os
 
 env = os.getenv("ENVIRONMENT", "dev")

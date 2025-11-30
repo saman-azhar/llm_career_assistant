@@ -1,0 +1,8 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0 -- /home/samwise/projects/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/samwise/projects/llm_career_assistant
+plugins: anyio-4.11.0, langsmith-0.4.38
+collecting ... collected 3 items
+
+career_assistant/tests/test_rag_pipeline.py::test_chunking 

@@ -1,0 +1,14 @@
+artifact_uri: /home/samwise/projects/llm_career_assistant/${MLFLOW_TRACKING_URI:-http:/mlflow:5000}/105988660429923401/4df4c1ebb20544cba19f63130ba9616d/artifacts
+end_time: 1764103998655
+entry_point_name: ''
+experiment_id: '105988660429923401'
+lifecycle_stage: active
+run_id: 4df4c1ebb20544cba19f63130ba9616d
+run_name: embed_documents
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1764103997396
+status: 3
+tags: []
+user_id: samwise

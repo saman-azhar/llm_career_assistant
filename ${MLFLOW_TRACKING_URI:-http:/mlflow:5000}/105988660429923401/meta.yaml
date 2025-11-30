@@ -1,0 +1,6 @@
+artifact_location: /home/samwise/projects/llm_career_assistant/${MLFLOW_TRACKING_URI:-http:/mlflow:5000}/105988660429923401
+creation_time: 1764091794431
+experiment_id: '105988660429923401'
+last_update_time: 1764091794431
+lifecycle_stage: active
+name: rag_pipeline

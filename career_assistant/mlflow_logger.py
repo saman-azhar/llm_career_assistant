@@ -5,20 +5,25 @@ from contextlib import contextmanager
 
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "mlruns")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-mlflow.set_experiment("career_assistant_experiment")
+mlflow.get_experiment_by_name("rag_pipeline")
 
 
 @contextmanager
 def start_run(run_name=None, tags=None):
     """
     Context manager to automatically start and end MLflow run.
+    Automatically detects if a run is already active and uses nested=True if needed.
     
     Usage:
         with start_run("baseline_model") as run:
             log_param("model", "logistic_regression")
             log_metric("accuracy", 0.85)
     """
-    with mlflow.start_run(run_name=run_name, tags=tags) as run:
+    # Check if a run is already active
+    active_run = mlflow.active_run()
+    is_nested = active_run is not None
+    
+    with mlflow.start_run(run_name=run_name, tags=tags, nested=is_nested) as run:
         yield run
 
 

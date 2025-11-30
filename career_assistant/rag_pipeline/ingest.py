@@ -10,8 +10,8 @@ from career_assistant.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-CHUNK_SIZE = 300
-CHUNK_OVERLAP = 70
+CHUNK_SIZE = 500      # Optimized for CPU-friendly LLMs
+CHUNK_OVERLAP = 100   # 20% overlap for better semantic flow
 
 def ingest_data(chunking=True):
     vs = VectorStore()
@@ -47,6 +47,7 @@ def ingest_data(chunking=True):
         all_points = []
         job_chunks_total = 0
         cv_chunks_total = 0
+        point_id_counter = 0
 
         # --- Ingest jobs ---
         logger.info(f"Ingesting {len(df_jobs)} job descriptions")
@@ -56,9 +57,11 @@ def ingest_data(chunking=True):
             embeddings = embedder.embed_documents(chunks)
             job_chunks_total += len(chunks)
             for j, (chunk_text_val, vec) in enumerate(zip(chunks, embeddings)):
+                # Convert to list if it's a numpy array, otherwise keep as is
+                vec_list = vec.tolist() if hasattr(vec, 'tolist') else vec
                 all_points.append(PointStruct(
-                    id=f"job_{i}_{j}",
-                    vector=vec.tolist(),
+                    id=point_id_counter,
+                    vector=vec_list,
                     payload={
                         "doc_id": i,  # original job index
                         "role": str(row.simplified_job_title),
@@ -67,6 +70,7 @@ def ingest_data(chunking=True):
                         "text": chunk_text_val
                     }
                 ))
+                point_id_counter += 1
 
         # --- Ingest CVs ---
         logger.info(f"Ingesting {len(df_cvs)} CVs")
@@ -76,17 +80,20 @@ def ingest_data(chunking=True):
             embeddings = embedder.embed_documents(chunks)
             cv_chunks_total += len(chunks)
             for j, (chunk_text_val, vec) in enumerate(zip(chunks, embeddings)):
+                # Convert to list if it's a numpy array, otherwise keep as is
+                vec_list = vec.tolist() if hasattr(vec, 'tolist') else vec
                 all_points.append(PointStruct(
-                    id=f"cv_{i}_{j}",
-                    vector=vec.tolist(),
+                    id=point_id_counter,
+                    vector=vec_list,
                     payload={
                         "doc_id": i,  # original CV index
-                        "name": str(row.category),
+                        "name": str(row.Category),
                         "source": "CV",
                         "chunk_idx": j,
                         "text": chunk_text_val
                     }
                 ))
+                point_id_counter += 1
 
         vs.client.upsert(collection_name=vs.collection_name, points=all_points)
         logger.info(f"Successfully ingested {len(all_points)} total chunks into Qdrant.")

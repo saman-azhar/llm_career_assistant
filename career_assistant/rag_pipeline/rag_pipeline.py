@@ -38,6 +38,15 @@ def run_rag_pipeline(cv_text: str, jd_text: str, top_k: int = 5, max_chunks: int
         similar_cv_chunks = retriever.retrieve_similar_cvs(cv_text, top_k=top_k)
         logger.info(f"Retrieved {len(similar_job_chunks)} job chunks and {len(similar_cv_chunks)} CV chunks")
 
+        # Fallback: Use input text if retrieval returns no results
+        if not similar_job_chunks:
+            logger.warning("No job chunks retrieved; using input JD text as fallback")
+            similar_job_chunks = [{"content": jd_text}]
+        
+        if not similar_cv_chunks:
+            logger.warning("No CV chunks retrieved; using input CV text as fallback")
+            similar_cv_chunks = [{"content": cv_text}]
+
         # Only take top max_chunks chunks to avoid token overflow
         jd_combined = " ".join([chunk["content"] for chunk in similar_job_chunks[:max_chunks]])
         cv_combined = " ".join([chunk["content"] for chunk in similar_cv_chunks[:max_chunks]])

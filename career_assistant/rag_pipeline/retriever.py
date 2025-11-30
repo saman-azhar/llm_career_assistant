@@ -31,20 +31,28 @@ class Retriever:
         """Return the most similar job descriptions (aggregated from chunks) for a given query text."""
         with start_run(run_name="retrieve_similar_jobs") as run_id:
             log_params({"query_length": len(query_text), "top_k": top_k})
-            results = self.vs.search(query_text, top_k=top_k)
-            log_metrics({"num_results": len(results)})
-            aggregated_results = self._aggregate_chunks(results)
-            logger.info(f"Aggregated {len(aggregated_results)} unique job documents from {len(results)} chunks")
+            results = self.vs.search(query_text, top_k=top_k*3)  # Get more results to filter
+            
+            # Filter for JD (job description) source
+            jd_results = [r for r in results if r.metadata.get("source") == "JD"][:top_k]
+            
+            log_metrics({"num_results": len(jd_results)})
+            aggregated_results = self._aggregate_chunks(jd_results)
+            logger.info(f"Aggregated {len(aggregated_results)} unique job documents from {len(jd_results)} chunks")
             return aggregated_results
 
     def retrieve_similar_cvs(self, query_text: str, top_k: int = 5):
         """Return the most similar CVs (aggregated from chunks) for a given query text."""
         with start_run(run_name="retrieve_similar_cvs") as run_id:
             log_params({"query_length": len(query_text), "top_k": top_k})
-            results = self.vs.search(query_text, top_k=top_k)
-            log_metrics({"num_results": len(results)})
-            aggregated_results = self._aggregate_chunks(results)
-            logger.info(f"Aggregated {len(aggregated_results)} unique CV documents from {len(results)} chunks")
+            results = self.vs.search(query_text, top_k=top_k*3)  # Get more results to filter
+            
+            # Filter for CV source
+            cv_results = [r for r in results if r.metadata.get("source") == "CV"][:top_k]
+            
+            log_metrics({"num_results": len(cv_results)})
+            aggregated_results = self._aggregate_chunks(cv_results)
+            logger.info(f"Aggregated {len(aggregated_results)} unique CV documents from {len(cv_results)} chunks")
             return aggregated_results
 
 
