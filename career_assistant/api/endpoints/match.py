@@ -37,10 +37,11 @@ def match_cv_jd(payload: MatchRequest):
 
         cover_letter = None
         if match_score >= COVER_LETTER_THRESHOLD:
-            cover_letter = cover_letter_generator.generate_cover_letter(
+            generation_result = cover_letter_generator.generate_cover_letter(
                 cv_text=payload.cv_text,
                 jd_text=payload.jd_text
             )
+            cover_letter = generation_result.get("cover_letter") if isinstance(generation_result, dict) else None
 
         return MatchResponse(
             match_score=match_score,

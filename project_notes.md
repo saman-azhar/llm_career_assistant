@@ -445,3 +445,38 @@ In short — the system now understands *what* the text means and *acts* on it i
 * Environment captured in `requirements.txt`; repository is **pipeline-ready for end-to-end automation and production deployment**.
 
 ---
+
+## Week 6 – LLM Experimentation, Chunking, and Robustness
+
+### LLM Experiments & Token Crisis
+- Tried multiple LLMs (FLAN-T5, Mistral, others) for cover letter generation.
+- Hit severe token overflow issues (e.g., 2167 > 512 tokens for FLAN-T5), causing hallucination, repetition, and poor output.
+- Experimented with chunking techniques: split input into 300–500 character chunks with overlap, then aggregate for RAG retrieval.
+- Wrote and expanded unit tests for chunking, retrieval, and generation to ensure pipeline robustness.
+- Explored prompt engineering and model configuration (temperature, max tokens, deduplication) to mitigate LLM weaknesses.
+- Realized that CPU inference is slow and unreliable for large models; GPU required for production-grade LLMs.
+
+### Engineering Improvements
+- Refactored pipeline for modularity: separate chunking, retrieval, and generation stages.
+- Centralized config for model selection, chunk size, and thresholds.
+- Improved skill extraction logic (regex for multi-word skills, longest-first matching).
+- All pipeline stages now have corresponding unit/integration tests.
+
+---
+
+## Week 7 – Dual-Generator Solution: Template + LLM
+
+### The Final Pivot: Combining LLM and Template Approaches
+- Recognized that pure LLM generation, while impressive, is not always reliable or resource-efficient.
+- Introduced a template-based generator: deterministic, fast, and ideal for production or fallback.
+- Unified both approaches in a single pipeline with a `generator_type` parameter ("llm" or "template").
+- Both generators use the same semantic matching, skill extraction, and 3-tier logic (poor/moderate/good match).
+- Template approach ensures high-quality, non-hallucinated output; LLM approach demonstrates AI/ML skills for recruiters.
+
+### Engineering Lessons & Project Story
+- The dual-generator architecture balances ideal results (template) with advanced AI demonstration (LLM).
+- All code is DRY, maintainable, and fully tested; switching approaches is seamless.
+- The project now tells a clear story: tried LLMs, hit real-world constraints, engineered a scalable, pragmatic solution.
+- README and documentation now reflect this honest journey, including failures, pivots, and the rationale for the final design.
+
+---

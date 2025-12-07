@@ -1,30 +1,27 @@
 
+
 # LLM-Powered Career Assistant
 
-An end-to-end NLP project that analyzes job descriptions, compares them with a CV, identifies missing skills, and generates improvement suggestions — now enhanced with a RAG pipeline, production-ready FastAPI endpoints, and LLM-driven contextual generation.
+A modular NLP project that analyzes job descriptions, compares them with a CV, identifies missing skills, and generates tailored cover letters using both LLM and template-based approaches. Includes a RAG pipeline, FastAPI endpoints, and MLflow tracking.
 
 ---
 
 ## Tech Stack
 
-**Core:** Python, Pandas, Scikit-learn
-**NLP/LLM:** HuggingFace Transformers, SentenceTransformers (`all-MiniLM-L6-v2` → `e5-base-v2`), Mistral-7B-Instruct-v0.2
-**Vector Database:** Qdrant (RAG-style retrieval)
-**MLOps:** MLflow, Docker, GitHub
-**API & UI:** FastAPI (real-time CV–JD matching), Streamlit (interactive demo)
+- **Python, Pandas, Scikit-learn**
+- **NLP/LLM:** HuggingFace Transformers (`flan-t5-base`), SentenceTransformers (`e5-base-v2`)
+- **Vector DB:** Qdrant (RAG retrieval)
+- **MLOps:** MLflow, Docker
+- **API:** FastAPI
 
 ---
 
-## Project Overview
+## Features
 
-| Phase  | Focus                         | Deliverable                                                                           |
-| ------ | ----------------------------- | ------------------------------------------------------------------------------------- |
-| Week 1 | Data cleaning & title mapping | Cleaned dataset, EDA visuals                                                          |
-| Week 2 | ML baseline (LR + SVM)        | Classification notebook                                                               |
-| Week 3 | Semantic matching             | Embedding-based similarity, missing skills                                            |
-| Week 4 | LLM integration               | Job summary + draft cover letters (Flan-T5)                                           |
-| Week 5 | RAG pipeline & Production     | `e5-base-v2` embeddings + Mistral-7B + Qdrant, FastAPI endpoints, Dockerized workflow |
-| Week 6 | Streamlit demo                | Interactive portfolio app                                                             |
+- Semantic matching between CVs and job descriptions
+- Missing skills detection and upskilling suggestions
+- RAG pipeline with both LLM and template-based cover letter generation
+- Production-ready: FastAPI endpoints, MLflow logging, Dockerized workflow
 
 ---
 
@@ -34,23 +31,9 @@ An end-to-end NLP project that analyzes job descriptions, compares them with a C
 git clone https://github.com/saman-azhar/llm_career_assistant.git
 cd llm_career_assistant
 pip install -r requirements.txt
+# or: docker-compose up --build
 ```
 
-* Setup details → [`setup_notes.md`](https://github.com/saman-azhar/llm_career_assistant/blob/main/setup.md)
-* Progress notes → [`project_notes.md`](https://github.com/saman-azhar/llm_career_assistant/blob/main/project_notes.md)
-
----
-
-## Highlights
-
-* End-to-end semantic matching between CVs and job descriptions.
-* Missing skills detection for targeted upskilling suggestions.
-* RAG-style LLM generation: context-grounded cover letters and insights.
-* Production-ready pipeline: FastAPI endpoints, modular scripts, CLI-friendly.
-* Embeddings upgraded to `e5-base-v2` for higher semantic fidelity.
-* LLM generator upgraded to `Mistral-7B-Instruct` for long-context and instruction-following tasks.
-* Vector database (Qdrant) integration for fast retrieval and RAG functionality.
-* Fully containerized workflow (Docker) with MLflow tracking for reproducibility.
-* Streamlit dashboard for interactive demonstration of CV–JD alignment and insights.
+See `setup.md` for full setup and usage instructions.
 
 ---

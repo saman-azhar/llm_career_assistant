@@ -38,12 +38,21 @@ KNOWN_SKILLS = [
 
 
 def extract_skills(text: str):
+    """Extract skills from text by matching against KNOWN_SKILLS list."""
     found = []
-    # Extract words as separate tokens
-    words = re.findall(r'\b\w+\b', text.lower())
-    for skill in KNOWN_SKILLS:
-        if skill in words:
+    text_lower = text.lower()
+    
+    # Sort by length (longest first) to match multi-word skills before single-word ones
+    # This prevents "machine" from matching before "machine learning"
+    sorted_skills = sorted(KNOWN_SKILLS, key=len, reverse=True)
+    
+    for skill in sorted_skills:
+        # Use word boundaries to avoid partial matches
+        # e.g., avoid matching "spark" in "sparkle"
+        pattern = r'\b' + re.escape(skill) + r'\b'
+        if re.search(pattern, text_lower):
             found.append(skill)
+    
     return found
 
 

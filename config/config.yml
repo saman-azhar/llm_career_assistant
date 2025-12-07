@@ -40,10 +40,9 @@ retriever:
   similarity_metric: "cosine"
 
 generator:
-  model_name: "google/flan-t5-small"
-  max_length: 200
-  min_length: 60
-  temperature: 0.7
+  model_name: "google/flan-t5-large"
+  max_tokens: 350
+  temperature: 0.9
   top_p: 0.9
 
 # --- Postgres Database ---
@@ -92,8 +91,7 @@ environments:
       batch_size: 16
       top_n: 3
     generator:
-      max_length: 150
-      min_length: 40
+      max_tokens: 350
     logging:
       level: "DEBUG"
   staging:
@@ -101,8 +99,7 @@ environments:
       batch_size: 32
       top_n: 5
     generator:
-      max_length: 200
-      min_length: 60
+      max_tokens: 350
     logging:
       level: "INFO"
   production:
@@ -110,8 +107,7 @@ environments:
       batch_size: 64
       top_n: 10
     generator:
-      max_length: 300
-      min_length: 100
+      max_tokens: 350
     logging:
       level: "WARNING"
     qdrant:

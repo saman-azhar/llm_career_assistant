@@ -1,8 +1,8 @@
 # career_assistant/rag_pipeline/vector_store.py
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_qdrant import Qdrant
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
+from langchain_core.documents import Document
 from career_assistant.mlflow_logger import start_run, log_params, log_metrics
 from career_assistant.utils.chunking import chunk_text
 
@@ -22,13 +22,6 @@ class VectorStore:
         # Qdrant client
         self.client = QdrantClient(host=host, port=port)
         self._ensure_collection()
-
-        # LangChain Qdrant wrapper (acts as retriever interface)
-        self.store = Qdrant(
-            client=self.client,
-            collection_name=self.collection_name,
-            embeddings=self.embeddings
-        )
 
     def _ensure_collection(self):
         if not self.client.collection_exists(self.collection_name):
@@ -76,9 +69,33 @@ class VectorStore:
             log_metrics({"num_inserted": len(all_points)})
 
     def search(self, query_text, top_k=5):
-        """Search using LangChain’s retriever abstraction"""
+        """Search using Qdrant's direct query_points to preserve all metadata"""
         with start_run(run_name="vector_store_search") as run_id:
             log_params({"query_length": len(query_text), "top_k": top_k})
-            results = self.store.similarity_search(query_text, k=top_k)
+            
+            # Embed the query
+            query_vector = self.embeddings.embed_query(query_text)
+            
+            # Search Qdrant directly to preserve metadata
+            search_results = self.client.query_points(
+                collection_name=self.collection_name,
+                query=query_vector,
+                limit=top_k,
+                with_payload=True,
+                with_vectors=False
+            )
+            
+            # Convert Qdrant results to LangChain Document format for compatibility
+            results = []
+            for scored_point in search_results.points:
+                # Add score to metadata for retriever to use
+                payload = dict(scored_point.payload)
+                payload["_score"] = scored_point.score if hasattr(scored_point, 'score') else 0
+                doc = Document(
+                    page_content=payload.get("text", ""),
+                    metadata=payload
+                )
+                results.append(doc)
+            
             log_metrics({"num_results": len(results)})
             return results

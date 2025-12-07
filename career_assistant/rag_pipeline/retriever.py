@@ -18,12 +18,14 @@ class Retriever:
             if doc_id is None:
                 logger.warning(f"Doc without 'doc_id' found in results: {doc.metadata}")
                 continue
+            # Get score from metadata (stored by VectorStore.search)
+            score = doc.metadata.get("_score", 0)
             # Keep the chunk with highest similarity score
-            if doc_id not in aggregated or doc.score > aggregated[doc_id]["score"]:
+            if doc_id not in aggregated or score > aggregated[doc_id]["score"]:
                 aggregated[doc_id] = {
                     "content": doc.page_content,
                     "metadata": doc.metadata,
-                    "score": doc.score
+                    "score": score
                 }
         return list(aggregated.values())
 
@@ -31,7 +33,8 @@ class Retriever:
         """Return the most similar job descriptions (aggregated from chunks) for a given query text."""
         with start_run(run_name="retrieve_similar_jobs") as run_id:
             log_params({"query_length": len(query_text), "top_k": top_k})
-            results = self.vs.search(query_text, top_k=top_k*3)  # Get more results to filter
+            # Get more results to ensure we have enough of each source
+            results = self.vs.search(query_text, top_k=top_k*5)
             
             # Filter for JD (job description) source
             jd_results = [r for r in results if r.metadata.get("source") == "JD"][:top_k]
@@ -45,7 +48,8 @@ class Retriever:
         """Return the most similar CVs (aggregated from chunks) for a given query text."""
         with start_run(run_name="retrieve_similar_cvs") as run_id:
             log_params({"query_length": len(query_text), "top_k": top_k})
-            results = self.vs.search(query_text, top_k=top_k*3)  # Get more results to filter
+            # Get more results to ensure we have enough of each source
+            results = self.vs.search(query_text, top_k=top_k*5)
             
             # Filter for CV source
             cv_results = [r for r in results if r.metadata.get("source") == "CV"][:top_k]

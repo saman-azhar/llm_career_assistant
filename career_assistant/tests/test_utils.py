@@ -86,5 +86,7 @@ def test_logger_no_duplicate_handlers(tmp_dir, monkeypatch):
     log2 = logger.get_logger("dup_logger")
     # Only one file and console handler should exist
     handler_types = [type(h) for h in log1.handlers]
-    assert handler_types.count(logger.RotatingFileHandler) == 1
-    assert handler_types.count(logger.StreamHandler) == 1
+    from logging import StreamHandler
+    from logging.handlers import RotatingFileHandler
+    assert handler_types.count(RotatingFileHandler) == 1
+    assert handler_types.count(StreamHandler) == 1

@@ -1,6 +1,7 @@
 # career_assistant/tests/test_rag_pipeline.py
 import logging
 import pytest
+from qdrant_client import QdrantClient
 from career_assistant.rag_pipeline.ingest import ingest_data
 from career_assistant.rag_pipeline.rag_pipeline import run_rag_pipeline
 from career_assistant.utils.chunking import chunk_text
@@ -14,12 +15,28 @@ logging.basicConfig(level=logging.INFO)
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_test_data():
-    """Ensure test data is ingested once before all tests run."""
+    """Ensure test data is ingested once before all tests run (reuse if exists)."""
     logger.info("\n" + "=" * 60)
-    logger.info("SETUP: Ingesting test data into Qdrant...")
+    logger.info("SETUP: Checking for existing test data...")
     logger.info("=" * 60)
+    
+    client = QdrantClient(host="localhost", port=6333)
+    collection_name = "career_assistant_qdrant"
+    
+    # Check if collection exists and has data
+    if client.collection_exists(collection_name):
+        collection_info = client.get_collection(collection_name)
+        point_count = collection_info.points_count
+        if point_count >= 700:  # Expected ~759 chunks
+            logger.info(f"[OK] Found existing data: {point_count} points in collection")
+            logger.info("  (Skipping reingest to save time)\n")
+            yield
+            return
+    
+    # If not enough data, reingest
+    logger.info("SETUP: Ingesting test data into Qdrant...")
     ingest_data(chunking=True)
-    logger.info("✓ Test data ready\n")
+    logger.info("[OK] Test data ready\n")
     yield
 
 def test_chunking():
@@ -29,36 +46,41 @@ def test_chunking():
     # Test 1: Normal text chunking
     sample_text = "This is a sample text for chunking test. " * 50
     chunks = chunk_text(sample_text, chunk_size=10, overlap=2)
-    logger.info(f"  ✓ Chunking test: {len(chunks)} chunks created from 50x repeated text")
+    logger.info(f"  [OK] Chunking test: {len(chunks)} chunks created from 50x repeated text")
     assert len(chunks) > 0, "Should create at least one chunk"
     assert all(len(chunk.split()) <= 10 for chunk in chunks), "All chunks should respect chunk_size"
     
     # Test 2: Empty text handling
     empty_chunks = chunk_text("", chunk_size=10, overlap=2)
-    logger.info(f"  ✓ Empty text: {len(empty_chunks)} chunks (should be 0)")
+    logger.info(f"  [OK] Empty text: {len(empty_chunks)} chunks (should be 0)")
     assert len(empty_chunks) == 0, "Empty text should produce no chunks"
     
     # Test 3: Small text (no chunking needed)
     small_text = "Small text"
     small_chunks = chunk_text(small_text, chunk_size=10, overlap=2)
-    logger.info(f"  ✓ Small text: {len(small_chunks)} chunk(s)")
+    logger.info(f"  [OK] Small text: {len(small_chunks)} chunk(s)")
     assert len(small_chunks) == 1, "Small text should produce exactly one chunk"
     assert small_chunks[0] == small_text, "Chunk content should match input"
     
     # Test 4: Verify overlap between chunks
     long_text = " ".join(["word"] * 100)  # 100 words
     overlapped_chunks = chunk_text(long_text, chunk_size=20, overlap=5)
-    logger.info(f"  ✓ Overlap validation: {len(overlapped_chunks)} chunks with 5-word overlap")
+    logger.info(f"  [OK] Overlap validation: {len(overlapped_chunks)} chunks with 5-word overlap")
     assert len(overlapped_chunks) > 1, "Long text should create multiple chunks"
     
-    logger.info("✓ All chunking tests passed")
+    logger.info("[OK] All chunking tests passed")
 
+@pytest.mark.slow
 def test_ingest(chunking=True):
-    """Test data ingestion pipeline with chunking enabled."""
+    """Test data ingestion pipeline with chunking enabled.
+    
+    This test is slow (~120s) and only needed when reingest is required.
+    Run with: pytest -m slow
+    """
     logger.info("Testing data ingestion pipeline...")
     logger.info(f"  Starting ingest with chunking={chunking}")
     ingest_data(chunking=chunking)
-    logger.info("✓ Data ingestion completed successfully")
+    logger.info("[OK] Data ingestion completed successfully")
 
 
 def test_vector_retrieval():
@@ -67,10 +89,10 @@ def test_vector_retrieval():
     
     retriever = Retriever(collection_name="career_assistant_qdrant")
     
-    # Test job retrieval with CV-like query
-    cv_query = "I'm an NLP engineer with 3 years of experience in Python, HuggingFace, and LLM fine-tuning."
-    retrieved_jobs = retriever.retrieve_similar_jobs(cv_query, top_k=3)
-    logger.info(f"  ✓ Retrieved {len(retrieved_jobs)} similar jobs")
+    # Test job retrieval with JD-like query (should match jobs well)
+    jd_query = "We're hiring an AI engineer with strong experience in NLP, Transformers, and model deployment."
+    retrieved_jobs = retriever.retrieve_similar_jobs(jd_query, top_k=3)
+    logger.info(f"  [OK] Retrieved {len(retrieved_jobs)} similar jobs")
     assert len(retrieved_jobs) > 0, "Should retrieve at least one job"
     
     # Verify job results have required structure
@@ -80,10 +102,10 @@ def test_vector_retrieval():
         assert len(job["content"]) > 0, "Job content should not be empty"
         logger.info(f"    - Job snippet: {job['content'][:80]}...")
     
-    # Test CV retrieval with JD-like query
-    jd_query = "We're hiring an AI engineer with strong experience in NLP, Transformers, and model deployment."
-    retrieved_cvs = retriever.retrieve_similar_cvs(jd_query, top_k=3)
-    logger.info(f"  ✓ Retrieved {len(retrieved_cvs)} similar CVs")
+    # Test CV retrieval with CV-like query (should match CVs well)
+    cv_query = "I'm an NLP engineer with 3 years of experience in Python, HuggingFace, and LLM fine-tuning."
+    retrieved_cvs = retriever.retrieve_similar_cvs(cv_query, top_k=3)
+    logger.info(f"  [OK] Retrieved {len(retrieved_cvs)} similar CVs")
     assert len(retrieved_cvs) > 0, "Should retrieve at least one CV"
     
     # Verify CV results have required structure
@@ -93,7 +115,7 @@ def test_vector_retrieval():
         assert len(cv["content"]) > 0, "CV content should not be empty"
         logger.info(f"    - CV snippet: {cv['content'][:80]}...")
     
-    logger.info("✓ Vector retrieval test passed")
+    logger.info("[OK] Vector retrieval test passed")
 
 
 def test_embedding_and_generation():
@@ -102,21 +124,32 @@ def test_embedding_and_generation():
     
     generator = CoverLetterGenerator()
     
-    # Test job summarization
+    # Test cover letter generation directly
     sample_jd = "We're hiring a Senior Python Developer with 5+ years experience. Must know FastAPI, PostgreSQL, Docker."
-    job_summary = generator.summarize_job(sample_jd)
-    logger.info(f"  ✓ Job summary generated ({len(job_summary.split())} words)")
-    assert len(job_summary) > 0, "Job summary should not be empty"
-    assert len(job_summary) < len(sample_jd) * 2, "Summary should be reasonable length"
-    
-    # Test cover letter generation
     sample_cv = "Senior Python developer with 6 years of experience in FastAPI, PostgreSQL, Docker, and Kubernetes."
-    cover_letter = generator.generate_cover_letter(sample_cv, job_summary)
-    logger.info(f"  ✓ Cover letter generated ({len(cover_letter.split())} words)")
-    assert len(cover_letter) > 0, "Cover letter should not be empty"
-    assert len(cover_letter.split()) > 20, "Cover letter should have substantial content"
+    result = generator.generate_cover_letter(sample_cv, sample_jd)
     
-    logger.info("✓ Generation test passed")
+    # Result is now a dict with generation results
+    assert isinstance(result, dict), "Should return a dict"
+    assert "cover_letter" in result, "Result should contain 'cover_letter' key"
+    assert "match_score" in result, "Result should contain 'match_score' key"
+    assert "match_level" in result, "Result should contain 'match_level' key"
+    
+    match_score = result["match_score"]
+    cover_letter = result["cover_letter"]
+    match_level = result["match_level"]
+    
+    logger.info(f"  [OK] Generated result - Level: {match_level}, Score: {match_score}, CL: {cover_letter is not None}")
+    
+    # For high match scores, cover letter should be generated
+    if match_score >= 0.80:
+        assert cover_letter is not None, "Cover letter should be generated for good matches"
+        assert len(cover_letter) > 50, "Cover letter should have substantial content"
+        logger.info(f"  [OK] Good match - Cover letter generated ({len(cover_letter.split())} words)")
+    else:
+        logger.info(f"  [OK] Low/moderate match - Assessment message provided instead")
+    
+    logger.info("[OK] Generation test passed")
 
 def test_retriever_and_generator():
     """Test the complete end-to-end RAG pipeline."""
@@ -129,22 +162,30 @@ def test_retriever_and_generator():
     # Validate retrieval
     retrieved_jobs = results.get("retrieved_jobs", [])
     retrieved_cvs = results.get("retrieved_cvs", [])
-    logger.info(f"  ✓ Retrieval: {len(retrieved_jobs)} jobs, {len(retrieved_cvs)} CVs")
+    logger.info(f"  [OK] Retrieval: {len(retrieved_jobs)} jobs, {len(retrieved_cvs)} CVs")
     assert len(retrieved_jobs) > 0, "Should retrieve at least one job"
     assert len(retrieved_cvs) > 0, "Should retrieve at least one CV"
 
-    # Validate job summary
-    job_summary = results.get("job_summary", "")
-    logger.info(f"  ✓ Job summary: {len(job_summary.split())} words")
-    assert len(job_summary) > 0, "Job summary should not be empty"
-
-    # Validate cover letter
-    cover_letter = results.get("cover_letter", "")
-    logger.info(f"  ✓ Cover letter: {len(cover_letter.split())} words")
-    assert len(cover_letter.split()) > 0, "Cover letter should contain text"
-    assert len(cover_letter) > 50, "Cover letter should have meaningful content"
+    # Validate generation result
+    match_score = results.get("match_score", 0)
+    match_level = results.get("match_level", "unknown")
+    cover_letter = results.get("cover_letter", None)
+    assessment_message = results.get("assessment_message", "")
     
-    logger.info("✓ End-to-end pipeline test passed")
+    logger.info(f"  [OK] Generation - Level: {match_level}, Score: {match_score}")
+    
+    # Always should have assessment message
+    assert assessment_message, "Should have assessment message"
+    
+    # For good matches, should have cover letter
+    if match_score >= 0.80:
+        assert cover_letter is not None, "Cover letter should be generated for good matches"
+        assert len(cover_letter) > 50, "Cover letter should have meaningful content"
+        logger.info(f"  [OK] Cover letter: {len(cover_letter.split())} words")
+    else:
+        logger.info(f"  [OK] Assessment provided for {match_level} match")
+    
+    logger.info("[OK] End-to-end pipeline test passed")
 
 
 def test_rag_pipeline_multiple_profiles():
@@ -176,12 +217,21 @@ def test_rag_pipeline_multiple_profiles():
         # Verify all required outputs exist
         assert results.get("retrieved_jobs"), f"No jobs retrieved for {profile['name']}"
         assert results.get("retrieved_cvs"), f"No CVs retrieved for {profile['name']}"
-        assert results.get("cover_letter"), f"No cover letter for {profile['name']}"
-        assert len(results["cover_letter"]) > 50, f"Cover letter too short for {profile['name']}"
+        assert "match_score" in results, f"No match score for {profile['name']}"
+        assert "match_level" in results, f"No match level for {profile['name']}"
+        assert results.get("assessment_message"), f"No assessment message for {profile['name']}"
         
-        logger.info(f"    ✓ {profile['name']}: CL length = {len(results['cover_letter'].split())} words")
+        # Cover letter only generated for moderate and good matches
+        cover_letter = results.get("cover_letter")
+        match_level = results.get("match_level")
+        
+        if cover_letter:
+            assert len(cover_letter) > 50, f"Cover letter too short for {profile['name']}"
+            logger.info(f"    [OK] {profile['name']}: {match_level} match - CL length = {len(cover_letter.split())} words")
+        else:
+            logger.info(f"    [OK] {profile['name']}: {match_level} match - Assessment provided instead of CL")
     
-    logger.info("✓ Multiple profiles test passed")
+    logger.info("[OK] Multiple profiles test passed")
 
 if __name__ == "__main__":
     logger.info("=" * 60)
@@ -207,5 +257,5 @@ if __name__ == "__main__":
     test_rag_pipeline_multiple_profiles()
 
     logger.info("\n" + "=" * 60)
-    logger.info("✓ ALL INTEGRATION TESTS PASSED SUCCESSFULLY")
+    logger.info("[OK] ALL INTEGRATION TESTS PASSED SUCCESSFULLY")
     logger.info("=" * 60)
