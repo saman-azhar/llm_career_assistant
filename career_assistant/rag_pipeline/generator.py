@@ -50,47 +50,44 @@ class CoverLetterGenerator:
         try:
             logger.info(f"Initializing CPU-friendly LLM: {self.model_name}")
             
-            # Configure device
-            device = -1 if self.use_cpu else 0  # -1 for CPU, 0 for GPU
-            device_map = "cpu" if self.use_cpu else "auto"
+            # Always load on CPU safely
+            import torch
+            torch_dtype = torch.float32  # CPU uses float32 for stability
             
             # Check if it's a T5 model (text2text-generation) or causal LM (text-generation)
             is_t5_model = "t5" in self.model_name.lower() or "flan" in self.model_name.lower()
             
             try:
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
-                
                 if is_t5_model:
-                    # T5 models use T5ForConditionalGeneration
                     from transformers import T5ForConditionalGeneration
                     model = T5ForConditionalGeneration.from_pretrained(
                         self.model_name,
-                        device_map=device_map,
-                        torch_dtype="float32" if self.use_cpu else "float16",
+                        torch_dtype=torch_dtype,
+                        device_map=None,  # Ensures model is loaded on CPU
                         trust_remote_code=True
                     )
                     hf_pipeline = pipeline(
                         "text2text-generation",
                         model=model,
                         tokenizer=tokenizer,
-                        device=device,
+                        device=-1,  # -1 for CPU
                         max_length=512,
                         do_sample=True,
                         temperature=0.7
                     )
                 else:
-                    # Causal LM models (phi-2, llama, etc.)
                     model = AutoModelForCausalLM.from_pretrained(
                         self.model_name,
-                        device_map=device_map,
-                        torch_dtype="float32" if self.use_cpu else "float16",
+                        torch_dtype=torch_dtype,
+                        device_map=None,  # Ensures model is loaded on CPU
                         trust_remote_code=True
                     )
                     hf_pipeline = pipeline(
                         "text-generation",
                         model=model,
                         tokenizer=tokenizer,
-                        device=device,
+                        device=-1,  # -1 for CPU
                         max_new_tokens=400,  # Limit for CPU efficiency
                         do_sample=True,
                         temperature=0.7,
@@ -115,8 +112,7 @@ class CoverLetterGenerator:
                 tokenizer = AutoTokenizer.from_pretrained(self.model_name)
                 model = T5ForConditionalGeneration.from_pretrained(
                     self.model_name,
-                    device_map=device_map,
-                    torch_dtype="float32"
+                    torch_dtype=torch_dtype
                 )
                 hf_pipeline = pipeline(
                     "text2text-generation",

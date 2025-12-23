@@ -259,9 +259,14 @@ def test_cover_letter_generator_basic():
     gen = CoverLetterGenerator(model_name="google/flan-t5-small")
     cv = "Python, ML experience"
     jd = "Looking for ML Engineer with Python"
-    letter = gen.generate_cover_letter(cv, jd, max_tokens=50)
-    assert isinstance(letter, str)
-    assert len(letter) > 0
+    result = gen.generate_cover_letter(cv, jd)
+    
+    # Result is now a dict with generation results
+    assert isinstance(result, dict), "Should return a dict"
+    assert "cover_letter" in result, "Result should contain 'cover_letter' key"
+    assert "match_score" in result, "Result should contain 'match_score' key"
+    assert "match_level" in result, "Result should contain 'match_level' key"
+    assert result["match_score"] >= 0.0 and result["match_score"] <= 1.0, "Match score should be between 0 and 1"
 
 @patch("career_assistant.rag_pipeline.vector_store.VectorStore.search")
 def test_retriever_methods(mock_search):

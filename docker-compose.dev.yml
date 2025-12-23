@@ -66,6 +66,22 @@ services:
       - "6333:6333"
     volumes:
       - qdrant_storage:/qdrant/storage
+
+  streamlit:
+    build: .
+    container_name: streamlit
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+    volumes:
+      - ./streamlit_app:/app/streamlit_app
+      - ./career_assistant:/app/career_assistant
+      - ./requirements.txt:/app/requirements.txt
+    depends_on:
+      - api
+    command: streamlit run streamlit_app/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 volumes:
   pgdata:
   mlflow_artifacts:
