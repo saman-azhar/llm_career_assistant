@@ -1,4 +1,3 @@
-
 # Setup Notes
 
 ## 1. Environment Setup (WSL + Python)
@@ -254,3 +253,77 @@ curl -X POST "http://localhost:8000/match_cv_jd" \
 ```
 
 Response will include top matches, similarity scores, and missing skills.
+
+---
+
+## 7. Full Project Setup (Recommended: Docker Compose)
+
+This project is designed for multi-service orchestration using Docker Compose. This will launch FastAPI, Streamlit, Qdrant, and MLflow together for a production-like environment.
+
+### Prerequisites
+- Docker and Docker Compose installed (see above)
+- (Optional) NVIDIA GPU drivers for GPU inference (if available)
+
+### Build and Start All Services
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+- FastAPI: http://localhost:8000
+- Streamlit: http://localhost:8501
+- Qdrant: http://localhost:6333
+- MLflow: http://localhost:5000
+
+### Environment Variables
+- `API_URL` (used by Streamlit): set to FastAPI endpoint, e.g., `http://api:8000` in Docker, or `http://localhost:8000` locally.
+
+---
+
+## 8. Streamlit App (Frontend Demo)
+
+### Local Development (if not using Docker Compose)
+
+```bash
+pip install -r requirements.txt
+cd streamlit_app
+streamlit run streamlit_app.py
+```
+
+- The app will be available at http://localhost:8501
+- Make sure FastAPI is running and accessible at the API_URL configured in the app.
+
+---
+
+## 9. MLflow Tracking (Experiment Management)
+
+- MLflow server is started automatically with Docker Compose.
+- Access MLflow UI at http://localhost:5000
+- To log experiments, ensure the `MLFLOW_TRACKING_URI` is set (see code/config.yml).
+
+---
+
+## 10. Model Weights & Downloads
+
+- The system will automatically download required models (e.g., Flan-T5, Mistral-7B) on first run if not present.
+- For GPU inference, ensure you have the correct hardware and drivers.
+- You can override model selection in the API or generator code via the `model_name` parameter.
+
+---
+
+## 11. Additional Notes
+
+- For production deployment, see the Scaling Plan in the README for architecture, cost, and scaling guidance.
+- Use the Makefile for common tasks (e.g., `make lint`, `make test`, `make run-pipeline`).
+- For troubleshooting, see project_notes.md and logs/ directory.
+
+---
+
+## 12. Main Endpoints (FastAPI)
+
+- `/match` (POST): Template-based skill matching and cover letter generation
+- `/compare` (POST): Compare LLM vs template output
+
+See the OpenAPI docs at http://localhost:8000/docs for full API reference.
+
+---

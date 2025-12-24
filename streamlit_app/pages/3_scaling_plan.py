@@ -31,7 +31,7 @@ with col1:
     - No batching/caching
     
     **Model:**
-    - FLAN-T5-base (60M params)
+    - FLAN-T5-base (~0.2B params)
     - Quantized for CPU portability
     - Generic, not fine-tuned
     
@@ -154,62 +154,6 @@ with st.expander("**Phase 3: Deploy (Final)**"):
     
     **API:** Same FastAPI interface, just faster + better
     """)
-
-st.divider()
-
-# Why This Matters
-st.subheader("💡 Why This Thinking Matters")
-
-st.markdown("""
-### This Roadmap Shows:
-
-1. **Problem Understanding**
-   - Identified bottleneck: CPU inference
-   - Quantified impact: 20-50x improvement possible
-   
-2. **System Design**
-   - Architecture: GPU + vLLM + fine-tuning
-   - Justification: Why each choice?
-   
-3. **Trade-offs**
-   - Cost vs performance
-   - Accuracy vs latency
-   - Complexity vs benefit
-   
-4. **Real-World Constraints**
-   - Not pretending to have infinite resources
-   - Showing cost-conscious thinking
-   - Proposing justified investments
-   
-5. **Implementation Path**
-   - Phase by phase, not wishful thinking
-   - Clear deliverables
-   - Realistic timelines
-
-### What Recruiters See:
-
-Bad narrative:
-> "This system would be amazing with GPUs" (wishful thinking)
-
-Good narrative:
-> "Current setup validates the architecture. Phase 2 fine-tunes on domain data (+25% quality). Phase 3 deploys to production. Expected ROI: 10x faster, 100x cheaper per request." (professional engineering)
-
----
-
-### This Is Your Differentiator
-
-Anyone can throw a model at a problem.
-**Only engineers can explain how to scale it properly.**
-
-Your portfolio now shows:
-- Working MVP
-- Honest bottleneck analysis
-- Data-driven roadmap
-- Cost-benefit reasoning
-- Production-ready thinking
-
-That gets you hired.
-""")
 
 # Cost calculator
 st.divider()

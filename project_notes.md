@@ -480,3 +480,102 @@ In short — the system now understands *what* the text means and *acts* on it i
 - README and documentation now reflect this honest journey, including failures, pivots, and the rationale for the final design.
 
 ---
+
+## Week 8 – Streamlit App Integration & System Design Decisions
+
+### Streamlit Frontend for Demo & Evaluation
+- Developed a multi-tab Streamlit app to showcase the end-to-end pipeline, including Ideal Output (template), Current Model (LLM vs template), and Scaling Plan.
+- Integrated the FastAPI backend with Streamlit for real-time, interactive cover letter generation and skill matching.
+- Ensured all API responses (matched skills, missing skills, assessment messages, cover letters) are accurately displayed in the UI.
+
+### System Design & Architecture Improvements
+- Refined API endpoints for clarity, factual accuracy, and recruiter/demo focus; removed engineering jargon and unverifiable claims from the UI.
+- Added live metric display (timing, speedup, cost) in Streamlit to support honest, data-driven demo claims.
+- Updated Scaling Plan to compare RAG, fine-tuning, and API-based LLM approaches, with cost/latency trade-offs and resource references.
+- Documented all system design decisions and trade-offs in both code and UI for transparency and professional presentation.
+
+### Engineering Lessons
+- Prioritized factual, recruiter-friendly outputs and clear system architecture in both backend and frontend.
+- Demonstrated ability to build, integrate, and present a production-ready ML system with honest trade-offs and scaling considerations.
+
+---
+
+# Scaling Plan (2025)
+
+## 1. System Architecture for Scale
+- **API Layer:** FastAPI (async) behind a load balancer (AWS ALB/GCP LB)
+- **Model Serving:** vLLM or Triton Inference Server for batching and GPU efficiency
+- **Vector Store:** Qdrant or Pinecone for scalable, low-latency semantic search
+- **Caching:** Redis for hot queries and embedding reuse
+- **Monitoring:** Prometheus + Grafana
+- **Deployment:** Kubernetes (EKS/GKE) for auto-scaling
+
+## 2. Expected Performance & Cost (late 2025)
+- **Model:** Mistral-7B or Llama-2-13B, quantized (int8)
+- **Hardware:** NVIDIA A100 (80GB) or H100
+- **Latency:**
+    - RAG-only: 150–300ms/request (batching, GPU, vector DB)
+    - RAG+LLM: 300–700ms/request (prompt length, batch size)
+- **Throughput:** 100–500 req/sec per GPU (with batching)
+- **Cost:**
+    - A100 on-demand: ~$3/hr (AWS/GCP)
+    - 1M req/month ≈ $150–$300 infra (1–2 GPUs, managed vector DB)
+    - Token cost (OpenAI API): $0.0005–$0.002/request
+    - Self-hosted: Only infra cost
+
+## 3. Fine-Tuning vs. RAG
+- **RAG:** Fast, cheap, robust for structured/fact-based tasks
+- **Fine-Tuning (LoRA/QLoRA/DPO):**
+    - Use for nuanced, personalized, or domain-specific generation
+    - LoRA/QLoRA for parameter-efficient fine-tuning
+    - DPO for aligning with recruiter preferences
+    - Cost: $100–$500 per run (A100, 2–4 hours)
+
+## 4. Example Production Stack
+- **API:** FastAPI (async, autoscaled)
+- **Model Serving:** vLLM (A100/H100, batching, quantized)
+- **Vector DB:** Qdrant (managed)
+- **Cache:** Redis
+- **Monitoring:** Prometheus, Grafana, Sentry
+- **CI/CD:** GitHub Actions, Docker, Kubernetes
+
+## 5. API-based Models as an Alternative
+
+**API-based LLMs (OpenAI GPT-4/4o, Anthropic Claude 3, etc.)**
+
+- **Strengths:**
+    - State-of-the-art language understanding and generation
+    - No infrastructure or MLOps required—just call the API
+    - Instantly scalable, always up-to-date
+    - Best for nuanced, context-rich, or premium features
+- **Considerations:**
+    - Higher cost at scale (e.g., $1,000+ per 1M requests)
+    - Data privacy: sensitive data sent to third party unless using private endpoints
+    - Limited fine-tuning/customization (prompt engineering and RAG are main tools)
+    - Slightly higher latency (500–1000ms typical)
+- **When to use:**
+    - When you need the highest quality out-of-the-box
+    - For rapid prototyping, premium features, or when infra is not available
+    - If you lack the data/resources for fine-tuning
+
+## 6. Summary Table
+
+| Approach             | Latency (ms) | Cost (per 1M req) | Personalization | Scaling      |
+|----------------------|--------------|-------------------|----------------|-------------|
+| RAG-only             | 150–300      | $150–$300         | Low–Medium     | Easy        |
+| RAG + Fine-tuned     | 300–700      | $200–$500         | High           | Easy        |
+| API-based (OpenAI)   | 500–1000     | $1,000+           | High           | Unlimited   |
+
+## Resources & References
+
+- Mistral.ai, Meta Llama-2 docs, HuggingFace Model Hub
+- vLLM official benchmarks: https://vllm.ai/
+- Qdrant performance: https://qdrant.tech/
+- Pinecone docs: https://docs.pinecone.io/
+- AWS EC2, GCP Compute Engine, Lambda Labs GPU pricing
+- OpenAI, Anthropic, Mistral API pricing
+- HuggingFace PEFT/QLoRA: https://huggingface.co/docs/peft/index
+- DPO: https://huggingface.co/docs/trl/main/en/dpo_trainer
+- MLOps community blogs, HuggingFace production stack examples
+
+---

@@ -32,8 +32,12 @@ help:
 	@echo "  make lint              - Run code linting (flake8)"
 	@echo "  make format            - Format code with black"
 	@echo ""
+	@echo "🌐 FRONTEND & TRACKING:"
+	@echo "  make streamlit         - Run Streamlit app locally (frontend demo)"
+	@echo "  make mlflow            - Run MLflow tracking server locally"
+	@echo ""
 	@echo "🐳 DOCKER DEVELOPMENT:"
-	@echo "  make dev-up            - Start dev environment (with hot-reload)"
+	@echo "  make dev-up            - Start dev environment (with hot-reload: FastAPI, Streamlit, Qdrant, MLflow)"
 	@echo "  make dev-down          - Stop dev environment"
 	@echo "  make dev-logs          - View dev logs"
 	@echo "  make dev-ps            - List running dev containers"
@@ -48,6 +52,25 @@ help:
 	@echo "  make clean             - Clean temporary files and caches"
 	@echo "  make docker-clean      - Remove all containers and volumes"
 	@echo ""
+	@echo "📑 MAIN API ENDPOINTS:"
+	@echo "  /match     (POST): Template-based skill matching and cover letter generation"
+	@echo "  /compare   (POST): Compare LLM vs template output"
+	@echo "  /health    (GET):  Health check"
+	@echo "  /metrics   (GET):  Metrics (placeholder)"
+	@echo "  /collections (GET): Qdrant collections"
+	@echo "  See http://localhost:8000/docs for full API reference."
+	@echo ""
+# --- Streamlit App ---
+streamlit:
+	@echo ">>> Running Streamlit app..."
+	cd streamlit_app && streamlit run streamlit_app.py
+	@echo "✓ Streamlit app running at http://localhost:8501"
+
+# --- MLflow Tracking Server ---
+mlflow:
+	@echo ">>> Running MLflow tracking server..."
+	mlflow ui --backend-store-uri mlruns --host 0.0.0.0 --port 5000
+	@echo "✓ MLflow UI running at http://localhost:5000"
 
 # --- Virtual Environment Setup ---
 init:

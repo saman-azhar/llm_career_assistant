@@ -1,6 +1,0 @@
-artifact_location: /home/samwise/projects/llm_career_assistant/${MLFLOW_TRACKING_URI:-http:/mlflow:5000}/0
-creation_time: 1764091794428
-experiment_id: '0'
-last_update_time: 1764091794428
-lifecycle_stage: active
-name: Default

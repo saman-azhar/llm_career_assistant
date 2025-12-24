@@ -60,3 +60,34 @@ output.txt
 # ----------------------
 .vscode/
 .idea/
+
+# ----------------------
+# Logging & runtime
+# ----------------------
+logs/
+*.log
+*.out
+*.err
+nohup.out
+
+# ----------------------
+# MLflow & experiment tracking
+# ----------------------
+mlruns/
+mlflow_artifacts/
+
+# ----------------------
+# Cache & temp folders
+# ----------------------
+.cache/
+*.cache/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# ----------------------
+# MLflow dynamic/variable folders
+# ----------------------
+$MLFLOW_TRACKING_URI*/
+${MLFLOW_TRACKING_URI*/
+

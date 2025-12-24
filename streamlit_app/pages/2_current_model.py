@@ -11,12 +11,9 @@ st.header("Current Model Comparison - LLM vs Template")
 st.warning("""
  *Evaluation:**
 
-**Current Setup:** FLAN-T5-base (60M params) running on CPU
+**Current Setup:** FLAN-T5-base (~0.2B params) running on CPU
 
 **Production Setup:** Would use 7B-13B model on GPU with LoRA fine-tuning
-
-**This is not an excuse, it's engineering honesty.**
-Shows how real ML teams develop: prototype → validate → scale.
 """)
 
 # Check if data is loaded

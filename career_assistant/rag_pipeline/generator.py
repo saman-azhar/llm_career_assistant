@@ -118,7 +118,7 @@ class CoverLetterGenerator:
                     "text2text-generation",
                     model=model,
                     tokenizer=tokenizer,
-                    device=device,
+                    device=-1,
                     max_length=512,
                     do_sample=True,
                     temperature=0.7
