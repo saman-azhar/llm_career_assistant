@@ -19,7 +19,7 @@ services:
     depends_on:
       - postgres
       - mlflow
-    command: uvicorn career_assistant.api.main:app --host 0.0.0.0 --port 8000 --workers 4
+    command: uvicorn career_assistant.api.main:app --host 0.0.0.0 --port 8000
     deploy:
       resources:
         limits:
@@ -37,7 +37,9 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   mlflow:
-    image: ghcr.io/mlflow/mlflow:v3.6.0
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
     restart: always
     ports:
       - "5000:5000"

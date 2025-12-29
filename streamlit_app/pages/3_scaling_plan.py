@@ -256,28 +256,4 @@ st.markdown("""
 | RAG + Fine-tuned     | 300–700      | $200–$500         | High           | Easy        |
 | API-based (OpenAI)   | 500–1000     | $1,000+           | High           | Unlimited   |
 
----
-
-#### Resources & References
-
-- Mistral.ai, Meta Llama-2 docs, HuggingFace Model Hub
-- vLLM official benchmarks: https://vllm.ai/
-- Qdrant performance: https://qdrant.tech/
-- Pinecone docs: https://docs.pinecone.io/
-- AWS EC2, GCP Compute Engine, Lambda Labs GPU pricing
-- OpenAI, Anthropic, Mistral API pricing
-- HuggingFace PEFT/QLoRA: https://huggingface.co/docs/peft/index
-- DPO: https://huggingface.co/docs/trl/main/en/dpo_trainer
-- MLOps community blogs, HuggingFace production stack examples
-
----
-
-### Next Steps
-
-1. **Now:** Explore "Ideal Output" and "Current Model" tabs
-2. **This week:** Collect recruitment dataset for fine-tuning
-3. **Next week:** Test Phase 2 on SageMaker
-4. **Month 2:** Full production deployment
-
-Questions? Check the README and project notes.
 """)

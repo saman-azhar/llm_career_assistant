@@ -29,8 +29,7 @@ try:
     with st.spinner("Comparing LLM and Template approaches..."):
         response = requests.post(
             f"{API_URL}/compare",
-            json={"cv_text": cv, "jd_text": jd},
-            timeout=60
+            json={"cv_text": cv, "jd_text": jd}
         )
     
     if response.status_code == 200:

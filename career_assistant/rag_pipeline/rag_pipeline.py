@@ -18,9 +18,12 @@ from career_assistant.mlflow_logger import start_run, log_params, log_metrics
 from career_assistant.utils.logger import get_logger
 from career_assistant.utils.config import Config
 
-import mlflow
 
-config = Config(env="dev").load_yaml_config()
+import mlflow
+import os
+
+# Use ENV environment variable to select config (default to dev)
+config = Config(env=os.environ.get("ENV", "dev")).load_yaml_config()
 generator_cfg = config.get("generator", {})
 
 mlflow_cfg = config.get("mlflow", {})

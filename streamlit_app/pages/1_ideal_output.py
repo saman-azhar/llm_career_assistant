@@ -97,13 +97,6 @@ try:
         # Footer
         st.divider()
         st.markdown("""
-        **What This Shows:**
-        - Clear matching algorithm
-        - Professional output quality
-        - Honest assessment (no fake enthusiasm)
-        - Actionable feedback
-        
-        This is the **target behavior** your system should achieve.
         Go to the "Current Model" tab to see how real inference performs.
         """)
         

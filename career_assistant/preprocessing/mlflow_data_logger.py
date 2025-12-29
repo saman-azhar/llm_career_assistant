@@ -2,7 +2,7 @@ import os
 import mlflow
 import pandas as pd
 
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "mlruns")
+MLFLOW_TRACKING_URI = os.environ["MLFLOW_TRACKING_URI"]
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_experiment("career_assistant_data_pipeline")
 

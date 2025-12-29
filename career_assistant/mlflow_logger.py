@@ -3,7 +3,7 @@ from mlflow import log_metric, log_param, log_artifact
 import os
 from contextlib import contextmanager
 
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "mlruns")
+MLFLOW_TRACKING_URI = os.environ["MLFLOW_TRACKING_URI"]
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.get_experiment_by_name("rag_pipeline")
 
